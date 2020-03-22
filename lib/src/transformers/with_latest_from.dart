@@ -8,13 +8,13 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   final R Function(S t, List<T> values) _combiner;
   final EventSink<R> _outputSink;
   final List<bool> _hasValues;
-  final List<T> _latestValues;
-  StreamSubscription<T> _subscription;
+  final List<T?> _latestValues;
+  StreamSubscription<T>? _subscription;
 
   _WithLatestFromStreamSink(
       this._outputSink, this._latestFromStreams, this._combiner)
       : _hasValues = List.filled(_latestFromStreams.length, false),
-        _latestValues = List<T>(_latestFromStreams.length);
+        _latestValues = List<T?>(_latestFromStreams.length);
 
   @override
   void add(S data) {
@@ -24,7 +24,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {
@@ -52,7 +52,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) =>
       _subscription?.pause(resumeSignal);
 
   @override

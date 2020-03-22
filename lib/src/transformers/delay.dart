@@ -24,7 +24,7 @@ class _DelayStreamSink<S> implements EventSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {

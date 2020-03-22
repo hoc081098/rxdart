@@ -19,6 +19,6 @@ extension MaxExtension<T> on Stream<T> {
   ///     final max = await stream.max((a, b) => a.length - b.length);
   ///
   ///     print(max); // prints 'looooooong'
-  Future<T> max([Comparator<T> comparator]) =>
+  Future<T> max([Comparator<T>? comparator]) =>
       toList().then((List<T> values) => (values..sort(comparator)).last);
 }

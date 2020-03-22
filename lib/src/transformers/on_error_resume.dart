@@ -15,7 +15,7 @@ class _OnErrorResumeStreamSink<S> implements EventSink<S> {
   }
 
   @override
-  void addError(e, [st]) {
+  void addError(e, [StackTrace? st]) {
     _inRecovery = true;
 
     final recoveryStream = _recoveryFn(e);

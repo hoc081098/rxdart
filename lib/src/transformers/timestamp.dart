@@ -11,7 +11,7 @@ class _TimestampStreamSink<S> implements EventSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() => _outputSink.close();
@@ -50,7 +50,7 @@ class Timestamped<T> {
   Timestamped(this.timestamp, this.value);
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     if (identical(this, other)) {
       return true;
     }

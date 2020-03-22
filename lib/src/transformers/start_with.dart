@@ -6,7 +6,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 class _StartWithStreamSink<S> implements ForwardingSink<S> {
   final S _startValue;
   final EventSink<S> _outputSink;
-  EventSink<S> _sink;
+  late EventSink<S> _sink;
   var _isFirstEventAdded = false;
 
   _StartWithStreamSink(this._outputSink, this._startValue);
@@ -18,7 +18,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) {
+  void addError(e, [StackTrace? st]) {
     _safeAddFirstEvent();
     _outputSink.addError(e, st);
   }
@@ -40,7 +40,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) {}
 
   @override
   void onResume(EventSink<S> sink) {}

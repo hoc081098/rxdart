@@ -10,7 +10,7 @@ class _EndWithStreamSink<S> implements EventSink<S> {
   void add(S data) => _outputSink.add(data);
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {

@@ -29,9 +29,9 @@ class ConcatStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(
     void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    Function? onError,
+    void Function()? onDone,
+    bool cancelOnError= false,
   }) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
@@ -45,8 +45,8 @@ class ConcatStream<T> extends Stream<T> {
       throw ArgumentError('One of the provided streams is null');
     }
 
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
+    late StreamController<T> controller;
+    StreamSubscription<T>? subscription;
 
     controller = StreamController<T>(
         sync: true,
@@ -72,10 +72,10 @@ class ConcatStream<T> extends Stream<T> {
 
           moveNext();
         },
-        onPause: ([Future<dynamic> resumeSignal]) =>
+        onPause: ([Future<dynamic>? resumeSignal]) =>
             subscription?.pause(resumeSignal),
         onResume: () => subscription?.resume(),
-        onCancel: () => subscription.cancel());
+        onCancel: () => subscription?.cancel());
 
     return controller;
   }

@@ -19,7 +19,7 @@ class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() => _outputSink.close();

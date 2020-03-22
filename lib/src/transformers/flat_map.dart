@@ -18,7 +18,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
 
     _openSubscriptions++;
 
-    StreamSubscription<T> subscription;
+    late StreamSubscription<T> subscription;
 
     subscription =
         mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
@@ -34,7 +34,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {
@@ -53,7 +53,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) =>
       _subscriptions.forEach((s) => s.pause(resumeSignal));
 
   @override

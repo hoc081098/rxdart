@@ -19,6 +19,6 @@ extension MinExtension<T> on Stream<T> {
   ///     final min = await stream.min((a, b) => a.length - b.length);
   ///
   ///     print(min); // prints 'short'
-  Future<T> min([Comparator<T> comparator]) =>
+  Future<T> min([Comparator<T>? comparator]) =>
       toList().then((List<T> values) => (values..sort(comparator)).first);
 }

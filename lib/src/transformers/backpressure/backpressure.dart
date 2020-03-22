@@ -24,18 +24,18 @@ enum WindowStrategy {
 
 class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   final WindowStrategy _strategy;
-  final Stream<dynamic> Function(S event) _windowStreamFactory;
-  final T Function(S event) _onWindowStart;
-  final T Function(List<S> queue) _onWindowEnd;
+  final Stream<dynamic> Function(S event)? _windowStreamFactory;
+  final T Function(S event)? _onWindowStart;
+  final T Function(List<S> queue)? _onWindowEnd;
   final int _startBufferEvery;
-  final bool Function(List<S> queue) _closeWindowWhen;
+  final bool Function(List<S> queue)? _closeWindowWhen;
   final bool _ignoreEmptyWindows;
   final bool _dispatchOnClose;
   final EventSink<T> _outputSink;
   final queue = <S>[];
   var skip = 0;
   var _hasData = false;
-  StreamSubscription<dynamic> _windowSubscription;
+  StreamSubscription<dynamic>? _windowSubscription;
 
   _BackpressureStreamSink(
       this._outputSink,
@@ -65,7 +65,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {
@@ -90,7 +90,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) =>
       _windowSubscription?.pause(resumeSignal);
 
   @override
@@ -132,7 +132,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
 
   void maybeCloseWindow() {
     if (_closeWindowWhen != null &&
-        _closeWindowWhen(UnmodifiableListView(queue))) {
+        _closeWindowWhen!(UnmodifiableListView(queue))) {
       resolveWindowEnd();
     }
   }
@@ -151,7 +151,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
 
     _windowSubscription?.cancel();
 
-    stream = _windowStreamFactory(event);
+    stream = _windowStreamFactory!(event);
 
     if (stream == null) {
       _outputSink.addError(ArgumentError.notNull('windowStreamFactory'));
@@ -162,7 +162,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
 
   void resolveWindowStart(S event) {
     if (_onWindowStart != null) {
-      _outputSink.add(_onWindowStart(event));
+      _outputSink.add(_onWindowStart!(event));
     }
   }
 
@@ -180,7 +180,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
 
     if (_hasData && (queue.isNotEmpty || !_ignoreEmptyWindows)) {
       if (_onWindowEnd != null) {
-        _outputSink.add(_onWindowEnd(List<S>.unmodifiable(queue)));
+        _outputSink.add(_onWindowEnd!(List<S>.unmodifiable(queue)));
       }
 
       // prepare the buffer for the next window.
@@ -261,19 +261,19 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final WindowStrategy strategy;
 
   /// Factory method used to create the [Stream] which will be buffered
-  final Stream<dynamic> Function(S event) windowStreamFactory;
+  final Stream<dynamic> Function(S event)? windowStreamFactory;
 
   /// Handler which fires when the window opens
-  final T Function(S event) onWindowStart;
+  final T Function(S event)? onWindowStart;
 
   /// Handler which fires when the window closes
-  final T Function(List<S> queue) onWindowEnd;
+  final T Function(List<S> queue)? onWindowEnd;
 
   /// Used to skip an amount of events
   final int startBufferEvery;
 
   /// Predicate which determines when the current window should close
-  final bool Function(List<S> queue) closeWindowWhen;
+  final bool Function(List<S> queue)? closeWindowWhen;
 
   /// Toggle to prevent, or allow windows that contain
   /// no events to be dispatched

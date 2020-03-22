@@ -10,7 +10,7 @@ class _MapToStreamSink<S, T> implements EventSink<S> {
   void add(S data) => _outputSink.add(_value);
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() => _outputSink.close();

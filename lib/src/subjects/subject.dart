@@ -72,7 +72,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   Future<dynamic> get done => _controller.done;
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add an error while items are being added from addStream');
@@ -81,7 +81,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     _addError(error, stackTrace);
   }
 
-  void _addError(Object error, [StackTrace stackTrace]) {
+  void _addError(Object error, [StackTrace? stackTrace]) {
     onAddError(error, stackTrace);
 
     _controller.addError(error, stackTrace);
@@ -90,7 +90,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// An extension point for sub-classes. Perform any side-effect / state
   /// management you need to here, rather than overriding the `add` method
   /// directly.
-  void onAddError(Object error, [StackTrace stackTrace]) {}
+  void onAddError(Object error, [StackTrace? stackTrace]) {}
 
   @override
   Future<dynamic> addStream(Stream<T> source, {bool cancelOnError = true}) {
@@ -160,8 +160,8 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// in the same manner as the original [Subject] does.
   /// e.g. replay or startWith on subscribe.
   StreamController<T> createForwardingController({
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   });
 }
@@ -177,7 +177,7 @@ class _StreamSinkWrapper<T> implements StreamSink<T> {
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     _target.addError(error, stackTrace);
   }
 

@@ -33,7 +33,7 @@ class ConcatEagerStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
+      {Function? onError, void Function()? onDone, bool cancelOnError= false}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
@@ -49,10 +49,10 @@ class ConcatEagerStream<T> extends Stream<T> {
 
     final len = streams.length;
     final completeEvents = List.generate(len, (_) => Completer<dynamic>());
-    List<StreamSubscription<T>> subscriptions;
-    StreamController<T> controller;
+    late List<StreamSubscription<T>> subscriptions;
+    late StreamController<T> controller;
     //ignore: cancel_subscriptions
-    StreamSubscription<T> activeSubscription;
+    late StreamSubscription<T> activeSubscription;
 
     controller = StreamController<T>(
         sync: true,
@@ -60,7 +60,7 @@ class ConcatEagerStream<T> extends Stream<T> {
           var index = -1, completed = 0;
 
           final onDone = (int index) {
-            final completer = completeEvents[index];
+            final Completer completer = completeEvents[index];
 
             return () {
               completer.complete();
@@ -91,7 +91,7 @@ class ConcatEagerStream<T> extends Stream<T> {
           // initially, the very first subscription is the active one
           activeSubscription = subscriptions.first;
         },
-        onPause: ([Future<dynamic> resumeSignal]) =>
+        onPause: ([Future<dynamic>? resumeSignal]) =>
             activeSubscription.pause(resumeSignal),
         onResume: () => activeSubscription.resume(),
         onCancel: () => Future.wait<dynamic>(subscriptions

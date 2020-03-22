@@ -288,13 +288,13 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     R Function(List<T> values) combiner,
   ) {
     final len = streams.length;
-    List<StreamSubscription<dynamic>> subscriptions;
-    StreamController<R> controller;
+    late List<StreamSubscription> subscriptions;
+    late StreamController<R> controller;
 
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>(len);
+        final values = List<T?>(len);
         var triggered = 0, completed = 0, index = 0;
 
         final allHaveEvent = () => triggered == len;
@@ -302,7 +302,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
         final onDone = () {
           if (++completed == len) controller.close();
         };
-        final onUpdate = (int index) => (T value) => values[index] = value;
+        final onUpdate = (int index) => (T? value) => values[index] = value;
 
         subscriptions = streams.map((stream) {
           final onUpdateForStream = onUpdate(index++);
@@ -330,7 +330,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
           );
         }).toList(growable: false);
       },
-      onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+      onPause: ([Future? resumeSignal]) => subscriptions
           .forEach((subscription) => subscription.pause(resumeSignal)),
       onResume: () =>
           subscriptions.forEach((subscription) => subscription.resume()),

@@ -13,7 +13,7 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.add(Notification.onError(e, st));
+  void addError(e, [StackTrace? st]) => _outputSink.add(Notification.onError(e, st));
 
   @override
   void close() {

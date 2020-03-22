@@ -6,7 +6,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> _otherStream;
   final EventSink<S> _outputSink;
-  StreamSubscription<T> _otherSubscription;
+  StreamSubscription<T>? _otherSubscription;
   var _canAdd = false;
 
   _SkipUntilStreamSink(this._outputSink, this._otherStream);
@@ -19,7 +19,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() {
@@ -36,7 +36,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
       .listen(null, onError: addError, onDone: () => _canAdd = true);
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) =>
       _otherSubscription?.pause(resumeSignal);
 
   @override

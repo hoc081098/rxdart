@@ -30,7 +30,7 @@ class _TakeWhileInclusiveStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [StackTrace? st]) => _outputSink.addError(e, st);
 
   @override
   void close() => _outputSink.close();
@@ -42,7 +42,7 @@ class _TakeWhileInclusiveStreamSink<S> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<S> sink, [Future? resumeSignal]) {}
 
   @override
   void onResume(EventSink<S> sink) {}
