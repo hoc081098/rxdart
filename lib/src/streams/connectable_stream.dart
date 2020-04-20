@@ -72,7 +72,8 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   @override
   StreamSubscription<T> connect() {
     return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
+      _source.listen(_subject.add,
+          onError: _subject.addError, onDone: _subject.close),
       _subject,
     );
   }
@@ -83,7 +84,8 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add,
+            onError: _subject.addError, onDone: _subject.close),
         _subject,
       );
     };
@@ -146,7 +148,8 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   @override
   StreamSubscription<T> connect() {
     return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
+      _source.listen(_subject.add,
+          onError: _subject.addError, onDone: _subject.close),
       _subject,
     );
   }
@@ -157,7 +160,8 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add,
+            onError: _subject.addError, onDone: _subject.close),
         _subject,
       );
     };
@@ -218,7 +222,8 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   @override
   StreamSubscription<T> connect() {
     return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
+      _source.listen(_subject.add,
+          onError: _subject.addError, onDone: _subject.close),
       _subject,
     );
   }
@@ -229,7 +234,8 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add,
+            onError: _subject.addError, onDone: _subject.close),
         _subject,
       );
     };

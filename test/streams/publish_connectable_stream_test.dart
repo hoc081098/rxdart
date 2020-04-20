@@ -12,14 +12,17 @@ void main() {
       final stream = MockStream<int>();
       final connectableStream = PublishConnectableStream(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError')))
+      when(stream.listen(any,
+              onError: anyNamed('onError'), onDone: anyNamed('onDone')))
           .thenReturn(Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
 
-      verifyNever(stream.listen(any, onError: anyNamed('onError')));
+      verifyNever(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
 
       connectableStream.connect();
 
-      verify(stream.listen(any, onError: anyNamed('onError')));
+      verify(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
     });
 
     test('should begin emitting items after connection', () {
@@ -28,7 +31,7 @@ void main() {
 
       stream.connect();
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('stops emitting after the connection is cancelled', () async {
@@ -45,9 +48,9 @@ void main() {
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('can multicast streams', () async {
@@ -55,17 +58,17 @@ void main() {
 
       stream.connect();
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('refcount automatically connects', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).share();
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('provide a function to autoconnect that stops listening', () async {

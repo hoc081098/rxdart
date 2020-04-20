@@ -12,14 +12,17 @@ void main() {
       final stream = MockStream<int>();
       final connectableStream = ValueConnectableStream(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError')))
+      when(stream.listen(any,
+              onError: anyNamed('onError'), onDone: anyNamed('onDone')))
           .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
 
-      verifyNever(stream.listen(any, onError: anyNamed('onError')));
+      verifyNever(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
 
       connectableStream.connect();
 
-      verify(stream.listen(any, onError: anyNamed('onError')));
+      verify(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
     });
 
     test('should begin emitting items after connection', () {
@@ -58,7 +61,7 @@ void main() {
       stream.listen(null);
       stream.listen(null)..cancel(); // ignore: unawaited_futures
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('multicasts a single-subscription stream', () async {
@@ -66,9 +69,9 @@ void main() {
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('replays the latest item', () async {
@@ -76,13 +79,13 @@ void main() {
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
 
       await Future<Null>.delayed(Duration(milliseconds: 200));
 
-      expect(stream, emits(3));
+      expect(stream, emitsInOrder(<dynamic>[3, emitsDone]));
     });
 
     test('replays the seeded item', () async {
@@ -90,13 +93,13 @@ void main() {
           ValueConnectableStream.seeded(StreamController<int>().stream, 3)
               .autoConnect();
 
-      expect(stream, emitsInOrder(const <int>[3]));
-      expect(stream, emitsInOrder(const <int>[3]));
-      expect(stream, emitsInOrder(const <int>[3]));
+      expect(stream, emitsInOrder(<dynamic>[3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[3, emitsDone]));
 
       await Future<Null>.delayed(Duration(milliseconds: 200));
 
-      expect(stream, emits(3));
+      expect(stream, emitsInOrder(<dynamic>[3, emitsDone]));
     });
 
     test('replays the seeded null item', () async {
@@ -104,28 +107,28 @@ void main() {
           ValueConnectableStream.seeded(StreamController<int>().stream, null)
               .autoConnect();
 
-      expect(stream, emitsInOrder(const <int>[null]));
-      expect(stream, emitsInOrder(const <int>[null]));
-      expect(stream, emitsInOrder(const <int>[null]));
+      expect(stream, emitsInOrder(<dynamic>[null, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[null, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[null, emitsDone]));
 
       await Future<Null>.delayed(Duration(milliseconds: 200));
 
-      expect(stream, emits(null));
+      expect(stream, emitsInOrder(<dynamic>[null, emitsDone]));
     });
 
     test('can multicast streams', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('transform Stream with initial value', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
 
       expect(stream.value, 0);
-      expect(stream, emitsInOrder(const <int>[0, 1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[0, 1, 2, 3, emitsDone]));
     });
 
     test('provides access to the latest value', () async {

@@ -12,14 +12,17 @@ void main() {
       final stream = MockStream<int>();
       final connectableStream = ReplayConnectableStream(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError')))
+      when(stream.listen(any,
+              onError: anyNamed('onError'), onDone: anyNamed('onDone')))
           .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
 
-      verifyNever(stream.listen(any, onError: anyNamed('onError')));
+      verifyNever(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
 
       connectableStream.connect();
 
-      verify(stream.listen(any, onError: anyNamed('onError')));
+      verify(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
     });
 
     test('should begin emitting items after connection', () {
@@ -59,7 +62,7 @@ void main() {
       stream.listen(null);
       stream.listen(null)..cancel(); // ignore: unawaited_futures
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('multicasts a single-subscription stream', () async {
@@ -67,9 +70,9 @@ void main() {
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       ).autoConnect();
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('replays the max number of items', () async {
@@ -78,28 +81,28 @@ void main() {
         maxSize: 2,
       ).autoConnect();
 
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
-      expect(stream, emitsInOrder(<int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
 
       await Future<Null>.delayed(Duration(milliseconds: 200));
 
-      expect(stream, emitsInOrder(<int>[2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[2, 3, emitsDone]));
     });
 
     test('can multicast streams', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareReplay();
 
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('only holds a certain number of values', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareReplay();
 
       expect(stream.values, const <int>[]);
-      expect(stream, emitsInOrder(const <int>[1, 2, 3]));
+      expect(stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('provides access to all items', () async {
