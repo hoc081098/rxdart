@@ -15,6 +15,23 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('Rx.startWith.immediately.Future', () async {
+    // issue 453
+    Future<bool> asyncFunc() async => false;
+    await expectLater(
+      Stream.fromFuture(asyncFunc()).startWith(true),
+      emitsInOrder(<dynamic>[true, false, emitsDone]),
+    );
+
+    final controller = StreamController<int>(sync: true);
+    expect(
+      controller.stream.startWith(2),
+      emitsInOrder(<dynamic>[2, 1, emitsDone]),
+    );
+    controller.add(1);
+    await controller.close();
+  });
+
   test('Rx.startWith.reusable', () async {
     final transformer = StartWithStreamTransformer<int>(5);
     const expectedOutput = [5, 1, 2, 3, 4];
