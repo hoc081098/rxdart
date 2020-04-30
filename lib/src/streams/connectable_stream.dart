@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/src/subjects/value_subject.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
 /// can be listened to multiple times and does not begin emitting items when
@@ -165,6 +166,82 @@ class BehaviorConnectableStream<T> extends ConnectableStream<T>
     _subject.onCancel = () {
       subscription.cancel();
     };
+
+    return _subject;
+  }
+
+  @override
+  T get value => _subject.value;
+
+  @override
+  bool get hasValue => _subject.hasValue;
+}
+
+/// A [ConnectableStream] that converts a single-subscription Stream into
+/// a broadcast [Stream], and provides synchronous access to the latest emitted value.
+class ValueConnectableStream<T> extends ConnectableStream<T>
+    implements ValueStream<T> {
+  final Stream<T> _source;
+  final ValueSubject<T> _subject;
+
+  ValueConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
+
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
+  /// [ValueSubject].
+  factory ValueConnectableStream(Stream<T> source, {bool sync = false}) =>
+      ValueConnectableStream<T>._(
+        source,
+        ValueSubject<T>(sync: sync),
+      );
+
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
+  /// [ValueSubject.seeded].
+  factory ValueConnectableStream.seeded(Stream<T> source, T seedValue,
+          {bool sync = false}) =>
+      ValueConnectableStream<T>._(
+        source,
+        ValueSubject<T>.seeded(seedValue, sync: sync),
+      );
+
+  @override
+  ValueStream<T> autoConnect({
+    void Function(StreamSubscription<T> subscription) connection,
+  }) {
+    _subject.onListen = () {
+      if (connection != null) {
+        connection(connect());
+      } else {
+        connect();
+      }
+    };
+
+    return _subject;
+  }
+
+  @override
+  StreamSubscription<T> connect() {
+    return ConnectableStreamSubscription<T>(
+      _source.listen(_subject.add, onError: _subject.addError),
+      _subject,
+    );
+  }
+
+  @override
+  ValueStream<T> refCount() {
+    ConnectableStreamSubscription<T> subscription;
+
+    _subject.onListen = () {
+      subscription = ConnectableStreamSubscription<T>(
+        _source.listen(_subject.add, onError: _subject.addError),
+        _subject,
+      );
+    };
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }

@@ -21,8 +21,8 @@ import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
-import 'streams/value_connectable_stream_test.dart'
-    as value_connectable_stream_test;
+import 'streams/behavior_connectable_stream_test.dart'
+    as behavior_connectable_stream_test;
 import 'streams/zip_test.dart' as zip_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 import 'subject/publish_subject_test.dart' as publish_subject_test;
@@ -163,7 +163,7 @@ void main() {
   replay_subject_test.main();
 
   // Connectable Streams
-  value_connectable_stream_test.main();
+  behavior_connectable_stream_test.main();
   replay_connectable_stream_test.main();
   publish_connectable_stream_test.main();
 
