@@ -6,11 +6,8 @@ import 'package:rxdart/src/subjects/subject.dart';
 /// A special StreamController that captures the latest item that has been
 /// added to the controller.
 ///
-/// ValueSubject's like PublishSubject, with the ability to capture latest item that has been
-/// added to the controller.
-///
-/// ValueSubject's like BehaviorSubject, except the latest value will not be sent to any
-/// new listeners of the subject.
+/// ValueSubject is the same as PublishSubject, with the ability to capture
+/// latest item that has been added to the controller.
 ///
 /// ValueSubject is, by default, a broadcast (aka hot) controller, in order
 /// to fulfill the Rx Subject contract. This means the Subject's `stream` can
