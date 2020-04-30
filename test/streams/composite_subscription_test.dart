@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('CompositeSubscription', () {
     test('should cancel all subscriptions on clear()', () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
       final composite = CompositeSubscription();
 
       composite
@@ -19,7 +19,7 @@ void main() {
       expect(stream, neverEmits(anything));
     });
     test('should cancel all subscriptions on dispose()', () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
       final composite = CompositeSubscription();
 
       composite
@@ -34,7 +34,7 @@ void main() {
     test(
         'should throw exception if trying to add subscription to disposed composite',
         () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
       final composite = CompositeSubscription();
 
       composite.dispose();
@@ -43,7 +43,7 @@ void main() {
     });
     test('should cancel subscription on if it is removed from composite', () {
       const value = 1;
-      final stream = Stream.fromIterable([value]).shareValue();
+      final stream = Stream.fromIterable([value]).shareBehavior();
       final composite = CompositeSubscription();
       final subscription = stream.listen(null);
 

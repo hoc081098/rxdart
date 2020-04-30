@@ -99,12 +99,12 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 /// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast Stream that replays the latest value to any new listener, and
 /// provides synchronous access to the latest emitted value.
-class ValueConnectableStream<T> extends ConnectableStream<T>
+class BehaviorConnectableStream<T> extends ConnectableStream<T>
     implements ValueStream<T> {
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  ValueConnectableStream._(Stream<T> source, this._subject)
+  BehaviorConnectableStream._(Stream<T> source, this._subject)
       : _source =
             source.isBroadcast ?? true ? source : source.asBroadcastStream(),
         super(_subject);
@@ -112,8 +112,8 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject].
-  factory ValueConnectableStream(Stream<T> source, {bool sync = false}) =>
-      ValueConnectableStream<T>._(
+  factory BehaviorConnectableStream(Stream<T> source, {bool sync = false}) =>
+      BehaviorConnectableStream<T>._(
         source,
         BehaviorSubject<T>(sync: sync),
       );
@@ -121,9 +121,9 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
-  factory ValueConnectableStream.seeded(Stream<T> source, T seedValue,
+  factory BehaviorConnectableStream.seeded(Stream<T> source, T seedValue,
           {bool sync = false}) =>
-      ValueConnectableStream<T>._(
+      BehaviorConnectableStream<T>._(
         source,
         BehaviorSubject<T>.seeded(seedValue, sync: sync),
       );
@@ -316,7 +316,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ConnectableStream<T> publish() =>
       PublishConnectableStream<T>(this, sync: true);
 
-  /// Convert the current Stream into a [ValueConnectableStream]
+  /// Convert the current Stream into a [BehaviorConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
   /// from the original Stream until the `connect` method is invoked.
   ///
@@ -328,7 +328,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// ```
   /// final source = Stream.fromIterable([1, 2, 3]);
-  /// final connectable = source.publishValue();
+  /// final connectable = source.publishBehavior();
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
@@ -347,10 +347,10 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableStream<T> publishValue() =>
-      ValueConnectableStream<T>(this, sync: true);
+  BehaviorConnectableStream<T> publishBehavior() =>
+      BehaviorConnectableStream<T>(this, sync: true);
 
-  /// Convert the current Stream into a [ValueConnectableStream]
+  /// Convert the current Stream into a [BehaviorConnectableStream]
   /// that can be listened to multiple times, providing an initial seeded value.
   /// It will not begin emitting items from the original Stream
   /// until the `connect` method is invoked.
@@ -363,7 +363,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// ```
   /// final source = Stream.fromIterable([1, 2, 3]);
-  /// final connectable = source.publishValueSeeded(0);
+  /// final connectable = source.publishBehaviorSeeded(0);
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
@@ -382,8 +382,8 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableStream<T> publishValueSeeded(T seedValue) =>
-      ValueConnectableStream<T>.seeded(this, seedValue);
+  BehaviorConnectableStream<T> publishBehaviorSeeded(T seedValue) =>
+      BehaviorConnectableStream<T>.seeded(this, seedValue);
 
   /// Convert the current Stream into a [ReplayConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
@@ -458,7 +458,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValue();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareBehavior();
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
@@ -475,7 +475,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ValueStream<T> shareValue() => publishValue().refCount();
+  ValueStream<T> shareBehavior() => publishBehavior().refCount();
 
   /// Convert the current Stream into a new [ValueStream] that can
   /// be listened to multiple times, providing an initial value.
@@ -493,7 +493,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValueSeeded(0);
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareBehaviorSeeded(0);
   ///
   /// // Start listening to the source Stream. Will start printing 0, 1, 2, 3
   /// final subscription = stream.listen(print);
@@ -510,8 +510,8 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ValueStream<T> shareValueSeeded(T seedValue) =>
-      publishValueSeeded(seedValue).refCount();
+  ValueStream<T> shareBehaviorSeeded(T seedValue) =>
+      publishBehaviorSeeded(seedValue).refCount();
 
   /// Convert the current Stream into a new [ReplayStream] that can
   /// be listened to multiple times. It will automatically begin emitting items

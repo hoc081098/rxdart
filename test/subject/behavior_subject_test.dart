@@ -547,7 +547,7 @@ void main() {
 
     test('issue/419: sync behavior', () async {
       final subject = BehaviorSubject.seeded(1, sync: true);
-      final mappedStream = subject.map((event) => event).shareValue();
+      final mappedStream = subject.map((event) => event).shareBehavior();
 
       mappedStream.listen(null);
 
@@ -558,7 +558,7 @@ void main() {
 
     test('issue/419: sync throughput', () async {
       final subject = BehaviorSubject.seeded(1, sync: true);
-      final mappedStream = subject.map((event) => event).shareValue();
+      final mappedStream = subject.map((event) => event).shareBehavior();
 
       mappedStream.listen(null);
 
@@ -571,7 +571,7 @@ void main() {
 
     test('issue/419: async behavior', () async {
       final subject = BehaviorSubject.seeded(1);
-      final mappedStream = subject.map((event) => event).shareValue();
+      final mappedStream = subject.map((event) => event).shareBehavior();
 
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
@@ -583,7 +583,7 @@ void main() {
 
     test('issue/419: async throughput', () async {
       final subject = BehaviorSubject.seeded(1);
-      final mappedStream = subject.map((event) => event).shareValue();
+      final mappedStream = subject.map((event) => event).shareBehavior();
 
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(2)));

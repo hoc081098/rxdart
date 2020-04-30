@@ -33,7 +33,7 @@ void main() {
 
     test('stops emitting after the connection is cancelled', () async {
       final ConnectableStream<int> stream =
-          Stream<int>.fromIterable(<int>[1, 2, 3]).publishValue();
+          Stream<int>.fromIterable(<int>[1, 2, 3]).publishBehavior();
 
       stream.connect()..cancel(); // ignore: unawaited_futures
 

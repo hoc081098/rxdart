@@ -10,7 +10,7 @@ void main() {
   group('BehaviorConnectableStream', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
-      final connectableStream = ValueConnectableStream(stream);
+      final connectableStream = BehaviorConnectableStream(stream);
 
       when(stream.listen(any, onError: anyNamed('onError')))
           .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
@@ -25,7 +25,7 @@ void main() {
     test('should begin emitting items after connection', () {
       var count = 0;
       const items = [1, 2, 3];
-      final stream = ValueConnectableStream(Stream.fromIterable(items));
+      final stream = BehaviorConnectableStream(Stream.fromIterable(items));
 
       stream.connect();
 
@@ -37,7 +37,7 @@ void main() {
     });
 
     test('stops emitting after the connection is cancelled', () async {
-      final stream = Stream.fromIterable(const [1, 2, 3]).publishValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).publishBehavior();
 
       stream.connect()..cancel(); // ignore: unawaited_futures
 
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('stops emitting after the last subscriber unsubscribes', () async {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
 
       stream.listen(null)..cancel(); // ignore: unawaited_futures
 
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('keeps emitting with an active subscription', () async {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
 
       stream.listen(null);
       stream.listen(null)..cancel(); // ignore: unawaited_futures
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final stream = ValueConnectableStream(
+      final stream = BehaviorConnectableStream(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('replays the latest item', () async {
-      final stream = ValueConnectableStream(
+      final stream = BehaviorConnectableStream(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
@@ -87,7 +87,7 @@ void main() {
 
     test('replays the seeded item', () async {
       final stream =
-          ValueConnectableStream.seeded(StreamController<int>().stream, 3)
+          BehaviorConnectableStream.seeded(StreamController<int>().stream, 3)
               .autoConnect();
 
       expect(stream, emitsInOrder(const <int>[3]));
@@ -101,7 +101,7 @@ void main() {
 
     test('replays the seeded null item', () async {
       final stream =
-          ValueConnectableStream.seeded(StreamController<int>().stream, null)
+          BehaviorConnectableStream.seeded(StreamController<int>().stream, null)
               .autoConnect();
 
       expect(stream, emitsInOrder(const <int>[null]));
@@ -114,7 +114,7 @@ void main() {
     });
 
     test('can multicast streams', () async {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
 
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
@@ -122,7 +122,8 @@ void main() {
     });
 
     test('transform Stream with initial value', () async {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
+      final stream =
+          Stream.fromIterable(const [1, 2, 3]).shareBehaviorSeeded(0);
 
       expect(stream.value, 0);
       expect(stream, emitsInOrder(const <int>[0, 1, 2, 3]));
@@ -131,7 +132,7 @@ void main() {
     test('provides access to the latest value', () async {
       const items = [1, 2, 3];
       var count = 0;
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareBehavior();
 
       stream.listen(expectAsync1((data) {
         expect(data, items[count]);
@@ -144,7 +145,7 @@ void main() {
 
     test('provide a function to autoconnect that stops listening', () async {
       final stream = Stream.fromIterable(const [1, 2, 3])
-          .publishValue()
+          .publishBehavior()
           .autoConnect(connection: (subscription) => subscription.cancel());
 
       expect(await stream.isEmpty, true);
