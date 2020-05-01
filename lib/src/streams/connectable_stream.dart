@@ -462,6 +462,14 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   BehaviorConnectableStream<T> publishBehaviorSeeded(T seedValue) =>
       BehaviorConnectableStream<T>.seeded(this, seedValue);
 
+  ///
+  ValueConnectableStream<T> publishValue() =>
+      ValueConnectableStream(this, sync: true);
+
+  ///
+  ValueConnectableStream<T> publishValueSeeded(T seedValue) =>
+      ValueConnectableStream.seeded(this, seedValue, sync: true);
+
   /// Convert the current Stream into a [ReplayConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
   /// from the original Stream until the `connect` method is invoked.
@@ -589,6 +597,13 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   ValueStream<T> shareBehaviorSeeded(T seedValue) =>
       publishBehaviorSeeded(seedValue).refCount();
+
+  ///
+  ValueStream<T> shareValue() => publishValue().refCount();
+
+  ///
+  ValueStream<T> shareValueSeeded(T seedValue) =>
+      publishValueSeeded(seedValue).refCount();
 
   /// Convert the current Stream into a new [ReplayStream] that can
   /// be listened to multiple times. It will automatically begin emitting items
