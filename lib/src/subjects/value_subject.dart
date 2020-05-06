@@ -120,14 +120,6 @@ class ValueSubject<T> extends Subject<T> implements ValueStream<T> {
 
   /// Set and emit the new value
   set value(T newValue) => add(newValue);
-
-  @override
-  StreamController<R> createForwardingController<R>({
-    void Function() onListen,
-    void Function() onCancel,
-    bool sync = false,
-  }) =>
-      ValueSubject(onCancel: onCancel, onListen: onListen, sync: sync);
 }
 
 class _Wrapper<T> {
