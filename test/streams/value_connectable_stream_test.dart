@@ -89,5 +89,21 @@ void main() {
         }
       }, count: items.length));
     });
+
+    test('provides access to the latest value with seeded value', () async {
+      const items = [1, 2, 3];
+      var count = 0;
+      final stream = Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
+
+      expect(stream.value, 0);
+
+      stream.listen(expectAsync1((data) {
+        expect(data, items[count]);
+        count++;
+        if (count == items.length) {
+          expect(stream.value, 3);
+        }
+      }, count: items.length));
+    });
   });
 }

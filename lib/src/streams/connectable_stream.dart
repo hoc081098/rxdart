@@ -462,11 +462,66 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   BehaviorConnectableStream<T> publishBehaviorSeeded(T seedValue) =>
       BehaviorConnectableStream<T>.seeded(this, seedValue);
 
+  /// Convert the current Stream into a [ValueConnectableStream] that can be listened
+  /// to multiple times. It will not begin emitting items from the original
+  /// Stream until the `connect` method is invoked.
   ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream, that also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Stream.fromIterable([1, 2, 3]);
+  /// final connectable = source.publishValue();
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  ///
+  /// // Start listening to the source Stream. Will cause the previous
+  /// // line to start printing 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Can access the latest emitted value synchronously. Prints 3
+  /// print(connectable.value);
+  ///
+  /// // Stop emitting items from the source stream
+  /// // and close the underlying ValueSubject
+  /// subscription.cancel();
+  /// ```
   ValueConnectableStream<T> publishValue() =>
       ValueConnectableStream(this, sync: true);
 
+  /// Convert the current Stream into a [ValueConnectableStream] that can be listened
+  /// to multiple times, providing an initial seeded value.
+  /// It will not begin emitting items from the original
+  /// Stream until the `connect` method is invoked.
   ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream, that also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Stream.fromIterable([1, 2, 3]);
+  /// final connectable = source.publishValueSeeded(0);
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  /// // Can access the latest value synchronously. Prints 0
+  /// print(connectable.value);
+  ///
+  /// // Start listening to the source Stream. Will cause the previous
+  /// // line to start printing 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Can access the latest emitted value synchronously. Prints 3
+  /// print(connectable.value);
+  ///
+  /// // Stop emitting items from the source stream
+  /// // and close the underlying ValueSubject
+  /// subscription.cancel();
+  /// ```
   ValueConnectableStream<T> publishValueSeeded(T seedValue) =>
       ValueConnectableStream.seeded(this, seedValue, sync: true);
 
@@ -598,10 +653,57 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ValueStream<T> shareBehaviorSeeded(T seedValue) =>
       publishBehaviorSeeded(seedValue).refCount();
 
+  /// Convert the current Stream into a new [ValueStream] that can
+  /// be listened to multiple times. It will automatically begin emitting items
+  /// when first listened to, and shut down when no listeners remain.
   ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream, that also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast stream
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValue();
+  ///
+  /// // Start listening to the source Stream. Will start printing 1, 2, 3
+  /// final subscription = stream.listen(print);
+  ///
+  /// // Synchronously print the latest value
+  /// print(stream.value);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // ValueSubject by cancelling all subscriptions.
+  /// subscription.cancel();
+  /// ```
   ValueStream<T> shareValue() => publishValue().refCount();
 
+  /// Convert the current Stream into a new [ValueStream] that can
+  /// be listened to multiple times. It will automatically begin emitting items
+  /// when first listened to, and shut down when no listeners remain.
   ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream, that also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast stream
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValueSeeded(0);
+  ///
+  /// // Synchronously print the latest value. Prints 0
+  /// print(stream.value);
+  ///
+  /// // Start listening to the source Stream. Will start printing 1, 2, 3
+  /// final subscription = stream.listen(print);
+  ///
+  /// // Synchronously print the latest value
+  /// print(stream.value);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // ValueSubject by cancelling all subscriptions.
+  /// subscription.cancel();
+  /// ```
   ValueStream<T> shareValueSeeded(T seedValue) =>
       publishValueSeeded(seedValue).refCount();
 
