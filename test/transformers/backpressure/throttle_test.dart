@@ -71,7 +71,7 @@ void main() {
     await expectLater(future, completes);
   });
 
-  test('Rx.throttle.error.shouldThrowA', () async {
+  test('Rx.throttle.error.shouldThrow', () async {
     final streamWithError = Stream<void>.error(Exception()).throttle(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
@@ -81,13 +81,8 @@ void main() {
     }));
   });
 
-  test('Rx.throttle.error.shouldThrowB', () {
-    expect(() => Stream.value(1).throttle(null),
-        throwsA(const TypeMatcher<AssertionError>()));
-  });
-
   test('Rx.throttle.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
 

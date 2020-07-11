@@ -102,15 +102,10 @@ void main() {
     await expectLater(future, completes);
   });
 
-  test('Rx.window.error.shouldThrowA', () async {
+  test('Rx.window.error.shouldThrow', () async {
     await expectLater(
         Stream<Null>.error(Exception())
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
-  });
-
-  test('Rx.window.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
-        emitsError(isArgumentError));
   });
 }

@@ -7,7 +7,7 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   final Stream<S> _fallbackStream;
 
   var _isEmpty = true;
-  StreamSubscription<S> _fallbackSubscription;
+  StreamSubscription<S>? _fallbackSubscription;
 
   _SwitchIfEmptyStreamSink(this._fallbackStream);
 
@@ -18,7 +18,7 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic error, [StackTrace st]) {
+  void addError(EventSink<S> sink, Object error, [StackTrace? st]) {
     sink.addError(error, st);
   }
 
@@ -44,7 +44,7 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {
+  void onPause(EventSink<S> sink, [Future<void>? resumeSignal]) {
     _fallbackSubscription?.pause(resumeSignal);
   }
 
@@ -84,11 +84,7 @@ class SwitchIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   /// Constructs a [StreamTransformer] which, when the source [Stream] emits
   /// no events, switches over to [fallbackStream].
-  SwitchIfEmptyStreamTransformer(this.fallbackStream) {
-    if (fallbackStream == null) {
-      throw ArgumentError('fallbackStream cannot be null');
-    }
-  }
+  SwitchIfEmptyStreamTransformer(this.fallbackStream);
 
   @override
   Stream<S> bind(Stream<S> stream) {

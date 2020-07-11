@@ -43,7 +43,7 @@ void main() {
     await expectLater(future, completes);
   });
 
-  test('Rx.throttleTime.error.shouldThrowA', () async {
+  test('Rx.throttleTime.error.shouldThrow', () async {
     final streamWithError = Stream<void>.error(Exception())
         .throttleTime(const Duration(milliseconds: 200));
 
@@ -53,15 +53,8 @@ void main() {
     }));
   });
 
-  test('Rx.throttleTime.error.shouldThrowB', () {
-    expect(
-      () => Stream.value(1).throttleTime(null),
-      throwsArgumentError,
-    );
-  });
-
   test('Rx.throttleTime.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
 

@@ -6,6 +6,8 @@ analyzer:
     implicit-dynamic: false
   exclude:
     - 'example/**'
+  enable-experiment:
+    - non-nullable
 
 linter:
   rules:

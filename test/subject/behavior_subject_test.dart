@@ -34,9 +34,9 @@ void main() {
     test('emits the most recently emitted null item to every subscriber',
         () async {
       // ignore: close_sinks
-      final unseeded = BehaviorSubject<int>(),
+      final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
-          seeded = BehaviorSubject<int>.seeded(0);
+          seeded = BehaviorSubject<int?>.seeded(0);
 
       unseeded.add(1);
       unseeded.add(2);
@@ -176,9 +176,9 @@ void main() {
 
     test('can synchronously get the latest null value', () async {
       // ignore: close_sinks
-      final unseeded = BehaviorSubject<int>(),
+      final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
-          seeded = BehaviorSubject<int>.seeded(0);
+          seeded = BehaviorSubject<int?>.seeded(0);
 
       unseeded.add(1);
       unseeded.add(2);
@@ -205,7 +205,7 @@ void main() {
     test('emits the null seed item if no new items have been emitted',
         () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>.seeded(null);
+      final subject = BehaviorSubject<int?>.seeded(null);
 
       await expectLater(subject.stream, emits(isNull));
       await expectLater(subject.stream, emits(isNull));
@@ -221,7 +221,7 @@ void main() {
 
     test('can synchronously get the initial null value', () {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>.seeded(null);
+      final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.value, null);
     });
@@ -514,7 +514,7 @@ void main() {
 
     test('hasValue returns true for a seeded subject with null seed', () {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>.seeded(null);
+      final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.hasValue, isTrue);
     });
@@ -544,12 +544,13 @@ void main() {
 
     test('hasError returns false for a seeded subject with null seed', () {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>.seeded(null);
+      final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.hasError, isFalse);
     });
 
-    test('hasError returns false for an unseeded subject after an emission', () {
+    test('hasError returns false for an unseeded subject after an emission',
+        () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
@@ -593,7 +594,7 @@ void main() {
 
     test('error returns null for a seeded subject with null seed', () {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>.seeded(null);
+      final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.error, isNull);
     });
@@ -619,7 +620,8 @@ void main() {
       expect(seeded.error, isException);
     });
 
-    test('emits event after error to every subscriber, ensures error is null', () async {
+    test('emits event after error to every subscriber, ensures error is null',
+        () async {
       // ignore: close_sinks
       final unseeded = BehaviorSubject<int>(),
           // ignore: close_sinks

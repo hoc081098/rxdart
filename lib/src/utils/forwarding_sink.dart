@@ -13,7 +13,7 @@ abstract class ForwardingSink<T, R> {
   void add(EventSink<R> sink, T data);
 
   /// Handle error event
-  void addError(EventSink<R> sink, dynamic error, [StackTrace st]);
+  void addError(EventSink<R> sink, Object error, [StackTrace? st]);
 
   /// Handle close event
   void close(EventSink<R> sink);
@@ -22,7 +22,7 @@ abstract class ForwardingSink<T, R> {
   void onListen(EventSink<R> sink);
 
   /// Fires when a subscriber pauses.
-  void onPause(EventSink<R> sink, [Future resumeSignal]);
+  void onPause(EventSink<R> sink, [Future<void>? resumeSignal]);
 
   /// Fires when a subscriber resumes after a pause.
   void onResume(EventSink<R> sink);

@@ -68,10 +68,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   ForkJoinStream(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
-  )   : assert(streams != null && streams.every((s) => s != null),
-            'streams cannot be null'),
-        assert(combiner != null, 'must provide a combiner function'),
-        super(_buildController(streams, combiner).stream);
+  ) : super(_buildController(streams, combiner).stream);
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
@@ -306,7 +303,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
       return StreamController<R>()..close();
     }
 
-    StreamController<R> controller;
+    late StreamController<R> controller;
 
     controller = StreamController<R>(
         sync: true,

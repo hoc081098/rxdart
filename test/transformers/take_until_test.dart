@@ -71,7 +71,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('Rx.takeUntil.error.shouldThrowA', () async {
+  test('Rx.takeUntil.error.shouldThrow', () async {
     final streamWithError =
         Stream<void>.error(Exception()).takeUntil(_getOtherStream());
 
@@ -81,12 +81,8 @@ void main() {
     }));
   });
 
-  test('Rx.takeUntil.error.shouldThrowB', () {
-    expect(() => Stream.value(1).takeUntil<void>(null), throwsArgumentError);
-  });
-
   test('Rx.takeUntil.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     const expectedOutput = [1, 2];
     var count = 0;
 

@@ -91,7 +91,7 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('Rx.concatEager.error.shouldThrowA', () async {
+  test('Rx.concatEager.error.shouldThrow', () async {
     final streamWithError =
         Rx.concatEager(_getStreams()..add(Stream<int>.error(Exception())));
 
@@ -99,14 +99,6 @@ void main() {
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
-  });
-
-  test('Rx.concatEager.error.shouldThrowB', () {
-    expect(() => Rx.concatEager<int>(null), throwsArgumentError);
-  });
-
-  test('Rx.concatEager.error.shouldThrowC', () {
-    expect(() => Rx.concatEager([Stream.value(1), null]), throwsArgumentError);
   });
 
   test('Rx.concatEager.pause.resume', () async {
@@ -117,8 +109,7 @@ void main() {
         last = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [9, 10, 11, 12][index]);
 
-    StreamSubscription<num> subscription;
-    // ignore: deprecated_member_use
+    late StreamSubscription<num> subscription;
     subscription =
         Rx.concatEager([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);

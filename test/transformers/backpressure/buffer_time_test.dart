@@ -75,15 +75,10 @@ void main() {
     await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
   });
 
-  test('Rx.bufferTime.error.shouldThrowA', () async {
+  test('Rx.bufferTime.error.shouldThrow', () async {
     await expectLater(
         Stream<void>.error(Exception())
             .bufferTime(const Duration(milliseconds: 160)),
         emitsError(isException));
-  });
-
-  test('Rx.bufferTime.error.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferTime(null),
-        throwsArgumentError);
   });
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 typedef RetryWhenStreamFactory = Stream<void> Function(
-    dynamic error, StackTrace stack);
+    Object error, StackTrace? stack);
 
 /// An [Error] which can be thrown by a retry [Stream].
 class RetryError extends Error {
@@ -15,7 +15,7 @@ class RetryError extends Error {
 
   /// Constructs a [RetryError], including the [errors] that were encountered
   /// during the [count] retry stages.
-  factory RetryError.withCount(int count, List<ErrorAndStacktrace> errors) =>
+  factory RetryError.withCount(int? count, List<ErrorAndStacktrace> errors) =>
       RetryError._('Received an error after attempting $count retries', errors);
 
   /// Constructs a [RetryError], including the [errors] that were encountered
@@ -31,10 +31,10 @@ class RetryError extends Error {
 /// corresponding stack trace.
 class ErrorAndStacktrace {
   /// A reference to the wrapped error object.
-  final dynamic error;
+  final Object error;
 
   /// A reference to the wrapped [StackTrace]
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   /// Constructs an object containing both an [error] and the
   /// corresponding [stackTrace].

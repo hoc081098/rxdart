@@ -5,14 +5,14 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DoStreamSink<S> implements ForwardingSink<S, S> {
-  final dynamic Function() _onCancel;
-  final void Function(S event) _onData;
-  final void Function() _onDone;
-  final void Function(Notification<S> notification) _onEach;
-  final Function _onError;
-  final void Function() _onListen;
-  final void Function(Future<dynamic> resumeSignal) _onPause;
-  final void Function() _onResume;
+  final dynamic Function()? _onCancel;
+  final void Function(S event)? _onData;
+  final void Function()? _onDone;
+  final void Function(Notification<S> notification)? _onEach;
+  final Function? _onError;
+  final void Function()? _onListen;
+  final void Function(Future<void>? resumeSignal)? _onPause;
+  final void Function()? _onResume;
 
   _DoStreamSink(
     this._onCancel,
@@ -41,7 +41,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) {
     try {
       _onError?.call(e, st);
     } catch (e, s) {
@@ -79,7 +79,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<S> sink, [Future<void>? resumeSignal]) =>
       _onPause?.call(resumeSignal);
 
   @override
@@ -123,28 +123,28 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 ///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// fires when all subscriptions have cancelled.
-  final dynamic Function() onCancel;
+  final dynamic Function()? onCancel;
 
   /// fires when data is emitted
-  final void Function(S event) onData;
+  final void Function(S event)? onData;
 
   /// fires on close
-  final void Function() onDone;
+  final void Function()? onDone;
 
   /// fires on data, close and error
-  final void Function(Notification<S> notification) onEach;
+  final void Function(Notification<S> notification)? onEach;
 
   /// fires on errors
-  final Function onError;
+  final Function? onError;
 
   /// fires when a subscription first starts
-  final void Function() onListen;
+  final void Function()? onListen;
 
   /// fires when the subscription pauses
-  final void Function(Future<dynamic> resumeSignal) onPause;
+  final void Function(Future<void>? resumeSignal)? onPause;
 
   /// fires when the subscription resumes
-  final void Function() onResume;
+  final void Function()? onResume;
 
   /// Constructs a [StreamTransformer] which will trigger any of the provided
   /// handlers as they occur.
@@ -269,7 +269,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .listen(null);
   ///
   ///     subscription.pause(); // prints 'Gimme a minute please'
-  Stream<T> doOnPause(void Function(Future<dynamic> resumeSignal) onPause) =>
+  Stream<T> doOnPause(void Function(Future<void>? resumeSignal) onPause) =>
       transform(DoStreamTransformer<T>(onPause: onPause));
 
   /// Invokes the given callback function when the stream subscription

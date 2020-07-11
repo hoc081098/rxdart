@@ -17,7 +17,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) {
     _safeAddFirstEvent(sink);
     sink.addError(e, st);
   }
@@ -39,7 +39,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<S> sink, [Future<void>? resumeSignal]) {}
 
   @override
   void onResume(EventSink<S> sink) {}

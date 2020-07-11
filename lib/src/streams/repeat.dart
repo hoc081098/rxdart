@@ -17,10 +17,10 @@ class RepeatStream<T> extends Stream<T> {
 
   /// The amount of repeat attempts that will be made
   /// If null or 0, then an indefinite amount of attempts will be made.
-  final int count;
+  final int? count;
   int _repeatStep = 0;
-  StreamController<T> _controller;
-  StreamSubscription<T> _subscription;
+  StreamController<T>? _controller;
+  StreamSubscription<T>? _subscription;
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created with the provided factory method).
@@ -32,20 +32,20 @@ class RepeatStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
   }) {
     _controller ??= StreamController<T>(
         sync: true,
         onListen: _maybeRepeatNext,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            _subscription.pause(resumeSignal),
-        onResume: () => _subscription.resume(),
+        onPause: ([Future<dynamic>? resumeSignal]) =>
+            _subscription?.pause(resumeSignal),
+        onResume: () => _subscription?.resume(),
         onCancel: () => _subscription?.cancel());
 
-    return _controller.stream.listen(
+    return _controller!.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -61,16 +61,16 @@ class RepeatStream<T> extends Stream<T> {
     }
 
     try {
-      _subscription = streamFactory(_repeatStep++).listen(_controller.add,
-          onError: _controller.addError, onDone: onDone, cancelOnError: false);
+      _subscription = streamFactory(_repeatStep++).listen(_controller?.add,
+          onError: _controller?.addError, onDone: onDone, cancelOnError: false);
     } catch (e, s) {
-      _controller.addError(e, s);
+      _controller?.addError(e, s);
     }
   }
 
   void _maybeRepeatNext() {
     if (_repeatStep == count) {
-      _controller.close();
+      _controller?.close();
     } else {
       _repeatNext();
     }

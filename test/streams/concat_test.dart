@@ -91,7 +91,7 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('Rx.concat.error.shouldThrowA', () async {
+  test('Rx.concat.error.shouldThrow', () async {
     final streamWithError =
         Rx.concat(_getStreams()..add(Stream<int>.error(Exception())));
 
@@ -99,19 +99,6 @@ void main() {
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
-  });
-
-  test('Rx.concat.error.shouldThrowB', () {
-    expect(() => Rx.concat<int>(null), throwsArgumentError);
-  });
-
-  test('Rx.concat.error.shouldThrowC', () {
-    expect(
-        () => [
-              Rx.concat([Stream.value(1), null]),
-              null
-            ],
-        throwsArgumentError);
   });
 
   test('Rx.concat.empty', () {

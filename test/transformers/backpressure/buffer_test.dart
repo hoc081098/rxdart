@@ -97,15 +97,10 @@ void main() {
     await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
   });
 
-  test('Rx.buffer.error.shouldThrowA', () async {
+  test('Rx.buffer.error.shouldThrow', () async {
     await expectLater(
         Stream<Null>.error(Exception())
             .buffer(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
-  });
-
-  test('Rx.buffer.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).buffer(null),
-        emitsError(isArgumentError));
   });
 }

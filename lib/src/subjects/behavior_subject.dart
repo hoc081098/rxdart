@@ -53,8 +53,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ///
   /// See also [StreamController.broadcast]
   factory BehaviorSubject({
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -80,8 +80,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   /// See also [StreamController.broadcast]
   factory BehaviorSubject.seeded(
     T seedValue, {
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -105,10 +105,10 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       () {
         if (wrapper.latestIsError) {
           return controller.stream.transform(StartWithErrorStreamTransformer(
-              wrapper.latestError, wrapper.latestStackTrace, sync));
+              wrapper.latestError!, wrapper.latestStackTrace, sync));
         } else if (wrapper.latestIsValue) {
           return controller.stream.transform(
-              StartWithStreamTransformer(wrapper.latestValue, sync: sync));
+              StartWithStreamTransformer(wrapper.latestValue!, sync: sync));
         }
 
         return controller.stream;
@@ -118,7 +118,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   void onAdd(T event) => _wrapper.setValue(event);
 
   @override
-  void onAddError(Object error, [StackTrace stackTrace]) =>
+  void onAddError(Object error, [StackTrace? stackTrace]) =>
       _wrapper.setError(error, stackTrace);
 
   @override
@@ -129,23 +129,27 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
   /// Get the latest value emitted by the Subject
   @override
-  T get value => _wrapper.latestValue;
+  T? get value => _wrapper.latestValue;
 
   /// Set and emit the new value
-  set value(T newValue) => add(newValue);
+  set value(T? newValue) {
+    if (newValue != null) {
+      add(newValue);
+    }
+  }
 
   @override
   bool get hasError => _wrapper.latestIsError;
 
   /// Get the latest error emitted by the Subject
   @override
-  Object get error => _wrapper.latestError;
+  Object? get error => _wrapper.latestError;
 }
 
 class _Wrapper<T> {
-  T latestValue;
-  Object latestError;
-  StackTrace latestStackTrace;
+  T? latestValue;
+  Object? latestError;
+  StackTrace? latestStackTrace;
 
   bool latestIsValue = false, latestIsError = false;
 
@@ -164,7 +168,7 @@ class _Wrapper<T> {
     latestStackTrace = null;
   }
 
-  void setError(Object error, [StackTrace stackTrace]) {
+  void setError(Object error, [StackTrace? stackTrace]) {
     latestIsValue = false;
     latestIsError = true;
 

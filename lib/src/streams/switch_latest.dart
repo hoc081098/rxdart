@@ -35,10 +35,10 @@ class SwitchLatestStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
   }) =>
       _controller.stream.listen(
         onData,
@@ -48,9 +48,9 @@ class SwitchLatestStream<T> extends Stream<T> {
       );
 
   static StreamController<T> _buildController<T>(Stream<Stream<T>> streams) {
-    StreamController<T> controller;
-    StreamSubscription<Stream<T>> subscription;
-    StreamSubscription<T> otherSubscription;
+    late StreamController<T> controller;
+    late StreamSubscription<Stream<T>> subscription;
+    StreamSubscription<T>? otherSubscription;
     var leftClosed = false, rightClosed = false, hasMainEvent = false;
 
     controller = StreamController<T>(
@@ -84,7 +84,7 @@ class SwitchLatestStream<T> extends Stream<T> {
             }
           }, onError: controller.addError, onDone: closeLeft);
         },
-        onPause: ([Future<dynamic> resumeSignal]) {
+        onPause: ([Future<dynamic>? resumeSignal]) {
           subscription.pause(resumeSignal);
           otherSubscription?.pause(resumeSignal);
         },
@@ -95,7 +95,7 @@ class SwitchLatestStream<T> extends Stream<T> {
         onCancel: () async {
           await subscription.cancel();
 
-          if (hasMainEvent) await otherSubscription.cancel();
+          if (hasMainEvent) await otherSubscription?.cancel();
         });
 
     return controller;

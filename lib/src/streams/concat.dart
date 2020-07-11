@@ -31,27 +31,21 @@ class ConcatStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
   }) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams == null) {
-      throw ArgumentError('Streams cannot be null');
-    }
     if (streams.isEmpty) {
       return StreamController<T>()..close();
     }
-    if (streams.any((Stream<T> stream) => stream == null)) {
-      throw ArgumentError('One of the provided streams is null');
-    }
 
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
+    late StreamController<T> controller;
+    StreamSubscription<T>? subscription;
 
     controller = StreamController<T>(
         sync: true,
@@ -77,10 +71,10 @@ class ConcatStream<T> extends Stream<T> {
 
           moveNext();
         },
-        onPause: ([Future<dynamic> resumeSignal]) =>
+        onPause: ([Future<dynamic>? resumeSignal]) =>
             subscription?.pause(resumeSignal),
         onResume: () => subscription?.resume(),
-        onCancel: () => subscription.cancel());
+        onCancel: () => subscription?.cancel());
 
     return controller;
   }

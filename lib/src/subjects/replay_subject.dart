@@ -47,16 +47,16 @@ import 'package:rxdart/src/transformers/start_with_error.dart';
 ///     subject.stream.listen(print); // prints 2, 3
 class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   final Queue<_Event<T>> _queue;
-  final int _maxSize;
+  final int? _maxSize;
 
   /// Constructs a [ReplaySubject], optionally pass handlers for
   /// [onListen], [onCancel] and a flag to handle events [sync].
   ///
   /// See also [StreamController.broadcast]
   factory ReplaySubject({
-    int maxSize,
-    void Function() onListen,
-    void Function() onCancel,
+    int? maxSize,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -75,12 +75,12 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
             (stream, event) {
           if (event.isError) {
             return stream.transform(StartWithErrorStreamTransformer(
-                event.errorAndStackTrace.error,
-                event.errorAndStackTrace.stackTrace,
+                event.errorAndStackTrace!.error,
+                event.errorAndStackTrace!.stackTrace,
                 sync));
           } else {
-            return stream
-                .transform(StartWithStreamTransformer(event.event, sync: sync));
+            return stream.transform(
+                StartWithStreamTransformer(event.event!, sync: sync));
           }
         }),
         reusable: true,
@@ -107,39 +107,32 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   }
 
   @override
-  void onAddError(Object error, [StackTrace stackTrace]) {
+  void onAddError(Object error, [StackTrace? stackTrace]) {
     if (_queue.length == _maxSize) {
       _queue.removeFirst();
     }
 
     _queue.add(_Event<T>(true,
-        errorAndStackTrace: _ErrorAndStackTrace(error, stackTrace)));
+        errorAndStackTrace: ErrorAndStacktrace(error, stackTrace)));
   }
 
   @override
   List<T> get values => _queue
       .where((event) => !event.isError)
-      .map((event) => event.event)
+      .map((event) => event.event!)
       .toList(growable: false);
 
   @override
   List<Object> get errors => _queue
       .where((event) => event.isError)
-      .map((event) => event.errorAndStackTrace.error)
+      .map((event) => event.errorAndStackTrace!.error)
       .toList(growable: false);
 }
 
 class _Event<T> {
   final bool isError;
-  final T event;
-  final _ErrorAndStackTrace errorAndStackTrace;
+  final T? event;
+  final ErrorAndStacktrace? errorAndStackTrace;
 
   _Event(this.isError, {this.event, this.errorAndStackTrace});
-}
-
-class _ErrorAndStackTrace {
-  final Object error;
-  final StackTrace stackTrace;
-
-  _ErrorAndStackTrace(this.error, this.stackTrace);
 }

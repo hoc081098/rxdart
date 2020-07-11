@@ -22,7 +22,7 @@ abstract class ConnectableStream<T> extends StreamView<T> {
   /// To disconnect from the source Stream, provide a [connection] callback and
   /// cancel the `subscription` at the appropriate time.
   Stream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   });
 
   /// Instructs the [ConnectableStream] to begin emitting items from the
@@ -50,13 +50,12 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ? source : source.asBroadcastStream(),
         super(_subject);
 
   @override
   Stream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       if (connection != null) {
@@ -79,7 +78,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
   @override
   Stream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -105,8 +104,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final BehaviorSubject<T> _subject;
 
   ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ? source : source.asBroadcastStream(),
         super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
@@ -130,7 +128,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ValueStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       if (connection != null) {
@@ -153,7 +151,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ValueStream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -170,13 +168,13 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   }
 
   @override
-  T get value => _subject.value;
+  T? get value => _subject.value;
 
   @override
   bool get hasValue => _subject.hasValue;
 
   @override
-  Object get error => _subject.error;
+  Object? get error => _subject.error;
 
   @override
   bool get hasError => _subject.hasError;
@@ -194,7 +192,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
   factory ReplayConnectableStream(Stream<T> stream,
-      {int maxSize, bool sync = false}) {
+      {int? maxSize, bool sync = false}) {
     return ReplayConnectableStream<T>._(
       stream,
       ReplaySubject<T>(maxSize: maxSize, sync: sync),
@@ -202,13 +200,12 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   }
 
   ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ? source : source.asBroadcastStream(),
         super(_subject);
 
   @override
   ReplayStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       if (connection != null) {
@@ -231,7 +228,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ReplayStream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -271,22 +268,22 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   }
 
   @override
-  Future<E> asFuture<E>([E futureValue]) => _source.asFuture(futureValue);
+  Future<E> asFuture<E>([E? futureValue]) => _source.asFuture(futureValue);
 
   @override
   bool get isPaused => _source.isPaused;
 
   @override
-  void onData(void Function(T data) handleData) => _source.onData(handleData);
+  void onData(void Function(T data)? handleData) => _source.onData(handleData);
 
   @override
-  void onDone(void Function() handleDone) => _source.onDone(handleDone);
+  void onDone(void Function()? handleDone) => _source.onDone(handleDone);
 
   @override
-  void onError(Function handleError) => _source.onError(handleError);
+  void onError(Function? handleError) => _source.onError(handleError);
 
   @override
-  void pause([Future<dynamic> resumeSignal]) => _source.pause(resumeSignal);
+  void pause([Future<dynamic>? resumeSignal]) => _source.pause(resumeSignal);
 
   @override
   void resume() => _source.resume();
@@ -423,7 +420,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // ReplaySubject
   /// subscription.cancel();
   /// ```
-  ReplayConnectableStream<T> publishReplay({int maxSize}) =>
+  ReplayConnectableStream<T> publishReplay({int? maxSize}) =>
       ReplayConnectableStream<T>(this, maxSize: maxSize, sync: true);
 
   /// Convert the current Stream into a new Stream that can be listened
@@ -552,6 +549,6 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ReplayStream<T> shareReplay({int maxSize}) =>
+  ReplayStream<T> shareReplay({int? maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
 }

@@ -27,10 +27,10 @@ class RetryStream<T> extends Stream<T> {
 
   /// The amount of retry attempts that will be made
   /// If null, then an indefinite amount of attempts will be made.
-  int count;
+  final int? count;
   int _retryStep = 0;
-  StreamController<T> _controller;
-  StreamSubscription<T> _subscription;
+  StreamController<T>? _controller;
+  StreamSubscription<T>? _subscription;
   final _errors = <ErrorAndStacktrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
@@ -41,44 +41,45 @@ class RetryStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
   }) {
-    void Function([int]) retry;
+    late void Function() retry;
 
     final combinedErrors = () => RetryError.withCount(
           count,
           _errors,
         );
 
-    retry = ([_]) {
-      _subscription = streamFactory().listen(_controller.add,
-          onError: (dynamic e, StackTrace s) {
-        _subscription.cancel();
+    retry = () {
+      _subscription = streamFactory().listen(_controller?.add,
+          onError: (Object e, StackTrace? s) {
+        _subscription?.cancel();
 
         _errors.add(ErrorAndStacktrace(e, s));
 
         if (count == _retryStep) {
           _controller
-            ..addError(combinedErrors())
+            ?..addError(combinedErrors())
             ..close();
         } else {
-          retry(++_retryStep);
+          ++_retryStep;
+          retry();
         }
-      }, onDone: _controller.close, cancelOnError: false);
+      }, onDone: _controller?.close, cancelOnError: false);
     };
 
     _controller ??= StreamController<T>(
         sync: true,
         onListen: retry,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            _subscription.pause(resumeSignal),
-        onResume: () => _subscription.resume(),
-        onCancel: () => _subscription.cancel());
+        onPause: ([Future<dynamic>? resumeSignal]) =>
+            _subscription?.pause(resumeSignal),
+        onResume: () => _subscription?.resume(),
+        onCancel: () => _subscription?.cancel());
 
-    return _controller.stream.listen(
+    return _controller!.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,

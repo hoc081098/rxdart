@@ -33,22 +33,18 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('Rx.endWithMany.error.shouldThrowA', () async {
+  test('Rx.endWithMany.error.shouldThrow', () async {
     final streamWithError =
         Stream<int>.error(Exception()).endWithMany(const [5, 6]);
 
     await expectLater(streamWithError, emitsError(isException));
   });
 
-  test('Rx.endWithMany.error.shouldThrowA', () {
-    expect(() => Stream.value(1).endWithMany(null), throwsArgumentError);
-  });
-
   test('Rx.endWithMany.pause.resume', () async {
     const expectedOutput = [1, 2, 3, 4, 5, 6];
     var count = 0;
 
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     subscription =
         _getStream().endWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);

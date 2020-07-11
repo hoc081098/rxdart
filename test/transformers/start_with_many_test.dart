@@ -39,25 +39,21 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('Rx.startWithMany.error.shouldThrowA', () async {
+  test('Rx.startWithMany.error.shouldThrow', () async {
     final streamWithError =
         Stream<int>.error(Exception()).startWithMany(const [5, 6]);
 
     streamWithError.listen(null,
-        onError: expectAsync2((Exception e, StackTrace s) {
+        onError: expectAsync2((Exception e, StackTrace? s) {
       expect(e, isException);
     }));
-  });
-
-  test('Rx.startWithMany.error.shouldThrowA', () {
-    expect(() => Stream.value(1).startWithMany(null), throwsArgumentError);
   });
 
   test('Rx.startWithMany.pause.resume', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     subscription =
         _getStream().startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);
@@ -70,6 +66,7 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
   test('Rx.startWithMany accidental broadcast', () async {
     final controller = StreamController<int>();
 

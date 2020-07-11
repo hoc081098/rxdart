@@ -78,15 +78,10 @@ void main() {
     await expectLater(future, completes);
   });
 
-  test('Rx.windowTime.error.shouldThrowA', () async {
+  test('Rx.windowTime.error.shouldThrow', () async {
     await expectLater(
         Stream<void>.error(Exception())
             .windowTime(const Duration(milliseconds: 160)),
         emitsError(isException));
-  });
-
-  test('Rx.windowTime.error.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTime(null),
-        throwsArgumentError);
   });
 }

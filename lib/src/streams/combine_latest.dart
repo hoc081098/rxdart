@@ -57,10 +57,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   CombineLatestStream(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
-  )   : assert(streams != null && streams.every((s) => s != null),
-            'streams cannot be null'),
-        assert(combiner != null, 'must provide a combiner function'),
-        super(_buildController(streams, combiner).stream);
+  ) : super(_buildController(streams, combiner).stream);
 
   /// Constructs a [CombineLatestStream] using a default combiner, which simply
   /// yields a [List] of all latest events emitted by the provided [Iterable] of [Stream].
@@ -295,13 +292,13 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     }
 
     final len = streams.length;
-    List<StreamSubscription<dynamic>> subscriptions;
-    StreamController<R> controller;
+    late List<StreamSubscription<dynamic>> subscriptions;
+    late StreamController<R> controller;
 
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>(len);
+        final values = List<T?>.filled(len, null);
         var triggered = 0, completed = 0, index = 0;
 
         final allHaveEvent = () => triggered == len;
@@ -337,13 +334,12 @@ class CombineLatestStream<T, R> extends StreamView<R> {
           );
         }).toList(growable: false);
       },
-      onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+      onPause: ([Future<dynamic>? resumeSignal]) => subscriptions
           .forEach((subscription) => subscription.pause(resumeSignal)),
       onResume: () =>
           subscriptions.forEach((subscription) => subscription.resume()),
-      onCancel: () => Future.wait<dynamic>(subscriptions
-          .map((subscription) => subscription.cancel())
-          .where((cancelFuture) => cancelFuture != null)),
+      onCancel: () => Future.wait<dynamic>(
+          subscriptions.map((subscription) => subscription.cancel())),
     );
 
     return controller;

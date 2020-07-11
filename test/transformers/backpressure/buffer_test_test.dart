@@ -57,8 +57,4 @@ void main() {
         emitsError(isException));
   });
 
-  test('Rx.bufferTest.skip.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferTest(null),
-        throwsArgumentError);
-  });
 }

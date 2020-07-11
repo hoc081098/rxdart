@@ -51,11 +51,7 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('Rx.race.shouldThrowA', () {
-    expect(() => Rx.race<Null>(null), throwsArgumentError);
-  });
-
-  test('Rx.race.shouldThrowB', () async {
+  test('Rx.race.shouldThrow', () async {
     final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
@@ -69,8 +65,7 @@ void main() {
         second = getDelayedStream(60, 2),
         last = getDelayedStream(70, 3);
 
-    StreamSubscription<int> subscription;
-    // ignore: deprecated_member_use
+    late StreamSubscription<int> subscription;
     subscription = Rx.race([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 

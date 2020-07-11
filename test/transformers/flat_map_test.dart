@@ -68,7 +68,7 @@ void main() {
   });
 
   test('Rx.flatMap.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream.value(0).flatMap((_) => Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {
