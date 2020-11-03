@@ -28,14 +28,12 @@ Stream<R> forwardStream<T, R>(
   };
 
   final onCancel = () {
-    final onCancelSelfFuture = subscription.cancel();
-    final onCancelConnectedFuture = sink.onCancel(controller);
+    final cancelSubscriptionFuture = subscription.cancel();
+    final cancelSinkFuture = sink.onCancel(controller);
 
-    final futures = <Future<void>>[
-      if (onCancelSelfFuture is Future) onCancelSelfFuture,
-      if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
-    ];
-    return Future.wait<Object>(futures);
+    return cancelSinkFuture is Future<void>
+        ? Future.wait([cancelSubscriptionFuture, cancelSinkFuture])
+        : cancelSubscriptionFuture;
   };
 
   final onPause = () {
