@@ -341,9 +341,8 @@ class CombineLatestStream<T, R> extends StreamView<R> {
           subscriptions.forEach((subscription) => subscription.pause()),
       onResume: () =>
           subscriptions.forEach((subscription) => subscription.resume()),
-      onCancel: () => Future.wait<Object>(subscriptions
-          .map((subscription) => subscription.cancel())
-          .where((cancelFuture) => cancelFuture != null)),
+      onCancel: () => Future.wait(
+          subscriptions.map((subscription) => subscription.cancel())),
     );
 
     return controller;

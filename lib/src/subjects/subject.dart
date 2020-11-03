@@ -69,7 +69,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   bool get hasListener => _controller.hasListener;
 
   @override
-  Future<Object> get done => _controller.done;
+  Future<void> get done => _controller.done;
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
@@ -93,7 +93,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   void onAddError(Object error, [StackTrace stackTrace]) {}
 
   @override
-  Future<Object> addStream(Stream<T> source, {bool cancelOnError = true}) {
+  Future<void> addStream(Stream<T> source, {bool cancelOnError = true}) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add items while items are being added from addStream');
@@ -147,7 +147,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   void onAdd(T event) {}
 
   @override
-  Future<Object> close() {
+  Future<void> close() {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot close the subject while items are being added from addStream');
@@ -182,11 +182,11 @@ class _StreamSinkWrapper<T> implements StreamSink<T> {
   }
 
   @override
-  Future<Object> close() => _target.close();
+  Future<void> close() => _target.close();
 
   @override
-  Future<Object> addStream(Stream<T> source) => _target.addStream(source);
+  Future<void> addStream(Stream<T> source) => _target.addStream(source);
 
   @override
-  Future<Object> get done => _target.done;
+  Future<void> get done => _target.done;
 }

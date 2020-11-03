@@ -56,7 +56,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
 
   @override
   FutureOr<void> onCancel(EventSink<T> sink) =>
-      Future.wait<Object>(_subscriptions.map((s) => s.cancel()));
+      Future.wait(_subscriptions.map((s) => s.cancel()));
 
   @override
   void onListen(EventSink<T> sink) {}

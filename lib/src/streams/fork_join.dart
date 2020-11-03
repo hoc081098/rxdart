@@ -27,7 +27,7 @@ import 'dart:async';
 ///
 /// This constructor takes in an `Iterable<Stream<T>>` and outputs a
 /// `Stream<Iterable<T>>` whenever any of the values change from the source
-/// stream. This is useful with a Object number of source streams!
+/// stream. This is useful with a dynamic number of source streams!
 ///
 ///     ForkJoinStream.list<String>([
 ///       Stream.fromIterable(['a']),

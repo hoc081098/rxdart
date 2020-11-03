@@ -45,30 +45,30 @@ class MergeStream<T> extends Stream<T> {
     StreamController<T> controller;
 
     controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          var completed = 0;
+      sync: true,
+      onListen: () {
+        var completed = 0;
 
-          final onDone = () {
-            completed++;
+        final onDone = () {
+          completed++;
 
-            if (completed == len) controller.close();
-          };
+          if (completed == len) controller.close();
+        };
 
-          for (var i = 0; i < len; i++) {
-            var stream = streams.elementAt(i);
+        for (var i = 0; i < len; i++) {
+          var stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen(controller.add,
-                onError: controller.addError, onDone: onDone);
-          }
-        },
-        onPause: () =>
-            subscriptions.forEach((subscription) => subscription.pause()),
-        onResume: () =>
-            subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<Object>(subscriptions
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+          subscriptions[i] = stream.listen(controller.add,
+              onError: controller.addError, onDone: onDone);
+        }
+      },
+      onPause: () =>
+          subscriptions.forEach((subscription) => subscription.pause()),
+      onResume: () =>
+          subscriptions.forEach((subscription) => subscription.resume()),
+      onCancel: () => Future.wait(
+          subscriptions.map((subscription) => subscription.cancel())),
+    );
 
     return controller;
   }

@@ -46,11 +46,8 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   FutureOr<void> onCancel(EventSink<S> sink) {
     return _recoverySubscriptions.isEmpty
         ? null
-        : Future.wait<Object>(
-            _recoverySubscriptions
-                .map((subscription) => subscription?.cancel())
-                .where((future) => future != null),
-          );
+        : Future.wait(_recoverySubscriptions
+            .map((subscription) => subscription?.cancel()));
   }
 
   @override

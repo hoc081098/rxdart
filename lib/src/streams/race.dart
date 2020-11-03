@@ -44,42 +44,42 @@ class RaceStream<T> extends Stream<T> {
     StreamController<T> controller;
 
     controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          var index = 0;
+      sync: true,
+      onListen: () {
+        var index = 0;
 
-          final reduceToWinner = (int winnerIndex) {
-            //ignore: cancel_subscriptions
-            final winner = subscriptions.removeAt(winnerIndex);
+        final reduceToWinner = (int winnerIndex) {
+          //ignore: cancel_subscriptions
+          final winner = subscriptions.removeAt(winnerIndex);
 
-            subscriptions.forEach((subscription) => subscription.cancel());
+          subscriptions.forEach((subscription) => subscription.cancel());
 
-            subscriptions = [winner];
-          };
+          subscriptions = [winner];
+        };
 
-          final doUpdate = (int index) => (T value) {
-                try {
-                  if (subscriptions.length > 1) reduceToWinner(index);
+        final doUpdate = (int index) => (T value) {
+              try {
+                if (subscriptions.length > 1) reduceToWinner(index);
 
-                  controller.add(value);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              };
+                controller.add(value);
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            };
 
-          subscriptions = streams
-              .map((stream) => stream.listen(doUpdate(index++),
-                  onError: controller.addError, onDone: controller.close))
-              .toList();
-        },
-        onPause: () =>
-            subscriptions.forEach((subscription) => subscription.pause()),
-        onResume: () =>
-            subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<Object>(subscriptions
-            .where((subscription) => subscription != null)
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        subscriptions = streams
+            .map((stream) => stream.listen(doUpdate(index++),
+                onError: controller.addError, onDone: controller.close))
+            .toList();
+      },
+      onPause: () =>
+          subscriptions.forEach((subscription) => subscription.pause()),
+      onResume: () =>
+          subscriptions.forEach((subscription) => subscription.resume()),
+      onCancel: () => Future.wait(subscriptions
+          .where((subscription) => subscription != null)
+          .map((subscription) => subscription.cancel())),
+    );
 
     return controller;
   }

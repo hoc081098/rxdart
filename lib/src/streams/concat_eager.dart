@@ -60,47 +60,47 @@ class ConcatEagerStream<T> extends Stream<T> {
     StreamSubscription<T> activeSubscription;
 
     controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          var index = -1, completed = 0;
+      sync: true,
+      onListen: () {
+        var index = -1, completed = 0;
 
-          final onDone = (int index) {
-            final completer = completeEvents[index];
+        final onDone = (int index) {
+          final completer = completeEvents[index];
 
-            return () {
-              completer.complete();
+          return () {
+            completer.complete();
 
-              if (++completed == len) {
-                controller.close();
-              } else {
-                activeSubscription = subscriptions[index + 1];
-              }
-            };
+            if (++completed == len) {
+              controller.close();
+            } else {
+              activeSubscription = subscriptions[index + 1];
+            }
           };
+        };
 
-          final createSubscription = (Stream<T> stream) {
-            index++;
-            //ignore: cancel_subscriptions
-            final subscription = stream.listen(controller.add,
-                onError: controller.addError, onDone: onDone(index));
+        final createSubscription = (Stream<T> stream) {
+          index++;
+          //ignore: cancel_subscriptions
+          final subscription = stream.listen(controller.add,
+              onError: controller.addError, onDone: onDone(index));
 
-            // pause all subscriptions, except the first, initially
-            if (index > 0) subscription.pause(completeEvents[index - 1].future);
+          // pause all subscriptions, except the first, initially
+          if (index > 0) subscription.pause(completeEvents[index - 1].future);
 
-            return subscription;
-          };
+          return subscription;
+        };
 
-          subscriptions =
-              streams.map(createSubscription).toList(growable: false);
+        subscriptions = streams.map(createSubscription).toList(growable: false);
 
-          // initially, the very first subscription is the active one
-          activeSubscription = subscriptions.first;
-        },
-        onPause: () => activeSubscription.pause(),
-        onResume: () => activeSubscription.resume(),
-        onCancel: () => Future.wait<Object>(subscriptions
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        // initially, the very first subscription is the active one
+        activeSubscription = subscriptions.first;
+      },
+      onPause: () => activeSubscription.pause(),
+      onResume: () => activeSubscription.resume(),
+      onCancel: () => Future.wait(
+        subscriptions.map((subscription) => subscription.cancel()),
+      ),
+    );
 
     return controller;
   }
