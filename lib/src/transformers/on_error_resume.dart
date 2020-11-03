@@ -3,12 +3,16 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
+/// TODO
+typedef RecoveryStreamFactory<T> = Stream<T> Function(
+    Object error, StackTrace stackTrace);
+
 class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
-  final Stream<S> Function(Object error) _recoveryFn;
+  final RecoveryStreamFactory<S> _recoveryStreamFactory;
   var _inRecovery = false;
   final List<StreamSubscription<S>> _recoverySubscriptions = [];
 
-  _OnErrorResumeStreamSink(this._recoveryFn);
+  _OnErrorResumeStreamSink(this._recoveryStreamFactory);
 
   @override
   void add(EventSink<S> sink, S data) {
@@ -21,7 +25,7 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   void addError(EventSink<S> sink, Object e, StackTrace st) {
     _inRecovery = true;
 
-    final recoveryStream = _recoveryFn(e);
+    final recoveryStream = _recoveryStreamFactory(e, st);
 
     StreamSubscription<S> subscription;
     subscription = recoveryStream.listen(
@@ -82,16 +86,16 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Method which returns a [Stream], based from the error.
-  final Stream<S> Function(Object error) recoveryFn;
+  final RecoveryStreamFactory<S> recoveryStreamFactory;
 
   /// Constructs a [StreamTransformer] which intercepts error events and
-  /// switches to a recovery [Stream] created by the provided [recoveryFn] Function.
-  OnErrorResumeStreamTransformer(this.recoveryFn);
+  /// switches to a recovery [Stream] created by the provided [recoveryStreamFactory] Function.
+  OnErrorResumeStreamTransformer(this.recoveryStreamFactory);
 
   @override
   Stream<S> bind(Stream<S> stream) => forwardStream(
         stream,
-        _OnErrorResumeStreamSink<S>(recoveryFn),
+        _OnErrorResumeStreamSink<S>(recoveryStreamFactory),
       );
 }
 
@@ -113,19 +117,19 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///     ErrorStream(Exception())
   ///       .onErrorResumeNext(Stream.fromIterable([1, 2, 3]))
   ///       .listen(print); // prints 1, 2, 3
-  Stream<T> onErrorResumeNext(Stream<T> recoveryStream) => transform(
-      OnErrorResumeStreamTransformer<T>((Object e) => recoveryStream));
+  Stream<T> onErrorResumeNext(Stream<T> recoveryStream) =>
+      transform(OnErrorResumeStreamTransformer<T>((e, st) => recoveryStream));
 
   /// Intercepts error events and switches to a recovery stream created by the
-  /// provided [recoveryFn].
+  /// provided [recoveryStreamFactory].
   ///
   /// The onErrorResume operator intercepts an onError notification from
   /// the source Stream. Instead of passing the error through to any
   /// listeners, it replaces it with another Stream of items created by the
-  /// [recoveryFn].
+  /// [recoveryStreamFactory].
   ///
-  /// The [recoveryFn] receives the emitted error and returns a Stream. You can
-  /// perform logic in the [recoveryFn] to return different Streams based on the
+  /// The [recoveryStreamFactory] receives the emitted error and returns a Stream. You can
+  /// perform logic in the [recoveryStreamFactory] to return different Streams based on the
   /// type of error that was emitted.
   ///
   /// If you do not need to perform logic based on the type of error that was
@@ -137,8 +141,8 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .onErrorResume((Object e) =>
   ///           Stream.fromIterable([e is StateError ? 1 : 0])
   ///       .listen(print); // prints 0
-  Stream<T> onErrorResume(Stream<T> Function(Object error) recoveryFn) =>
-      transform(OnErrorResumeStreamTransformer<T>(recoveryFn));
+  Stream<T> onErrorResume(RecoveryStreamFactory<T> recoveryStreamFactory) =>
+      transform(OnErrorResumeStreamTransformer<T>(recoveryStreamFactory));
 
   /// instructs a Stream to emit a particular item when it encounters an
   /// error, and then terminate normally
@@ -155,9 +159,8 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///     ErrorStream(Exception())
   ///       .onErrorReturn(1)
   ///       .listen(print); // prints 1
-  Stream<T> onErrorReturn(T returnValue) =>
-      transform(OnErrorResumeStreamTransformer<T>(
-          (Object e) => Stream.value(returnValue)));
+  Stream<T> onErrorReturn(T returnValue) => transform(
+      OnErrorResumeStreamTransformer<T>((e, st) => Stream.value(returnValue)));
 
   /// instructs a Stream to emit a particular item created by the
   /// [returnFn] when it encounters an error, and then terminate normally.
@@ -178,7 +181,8 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///     ErrorStream(Exception())
   ///       .onErrorReturnWith((e) => e is Exception ? 1 : 0)
   ///       .listen(print); // prints 1
-  Stream<T> onErrorReturnWith(T Function(Object error) returnFn) =>
+  Stream<T> onErrorReturnWith(
+          T Function(Object error, StackTrace stackTrace) returnFn) =>
       transform(OnErrorResumeStreamTransformer<T>(
-          (Object e) => Stream.value(returnFn(e))));
+          (e, s) => Stream.value(returnFn(e, s))));
 }

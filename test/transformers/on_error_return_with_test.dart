@@ -8,7 +8,7 @@ void main() {
 
   test('Rx.onErrorReturnWith', () async {
     Stream<num>.error(Exception())
-        .onErrorReturnWith((Object e) => e is StateError ? 1 : 0)
+        .onErrorReturnWith((e, st) => e is StateError ? 1 : 0)
         .listen(expectAsync1((num result) {
       expect(result, expected);
     }));
@@ -16,7 +16,7 @@ void main() {
 
   test('Rx.onErrorReturnWith.asBroadcastStream', () async {
     final stream = Stream<num>.error(Exception())
-        .onErrorReturnWith((Object e) => 0)
+        .onErrorReturnWith((e, st) => 0)
         .asBroadcastStream();
 
     await expectLater(stream.isBroadcast, isTrue);
@@ -34,7 +34,7 @@ void main() {
     StreamSubscription<num> subscription;
 
     subscription = Stream<num>.error(Exception())
-        .onErrorReturnWith((Object e) => 0)
+        .onErrorReturnWith((e, st) => 0)
         .listen(expectAsync1((num result) {
       expect(result, expected);
 
@@ -48,7 +48,7 @@ void main() {
   test('Rx.onErrorReturnWith accidental broadcast', () async {
     final controller = StreamController<int>();
 
-    final stream = controller.stream.onErrorReturnWith((Object _) => 1);
+    final stream = controller.stream.onErrorReturnWith((_, __) => 1);
 
     stream.listen(null);
     expect(() => stream.listen(null), throwsStateError);
