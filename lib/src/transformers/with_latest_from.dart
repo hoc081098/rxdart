@@ -29,10 +29,7 @@ class _WithLatestFromStreamSink<S, T, R>
   @override
   FutureOr<void> onCancel(EventSink<R> sink) {
     if (_subscriptions.isNotEmpty) {
-      final futures = _subscriptions.map((s) => s.cancel());
-      if (futures.isNotEmpty) {
-        return Future.wait<Object>(futures);
-      }
+      return Future.wait<void>(_subscriptions.map((s) => s.cancel()));
     }
   }
 
