@@ -14,12 +14,8 @@ class _ScanStreamSink<S, T>
 
   @override
   void add(EventSink<T> sink, S data) {
-    try {
-      _acc = _accumulator(_acc, data, _index++);
-    } catch (e, s) {
-      sink.addError(e, s);
-      return;
-    }
+    _acc = _accumulator(_acc, data, _index++);
+
     sink.add(_acc);
   }
 }

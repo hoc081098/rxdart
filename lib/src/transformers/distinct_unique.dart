@@ -1,28 +1,29 @@
 import 'dart:async';
 import 'dart:collection';
 
-class _DistinctUniqueStreamSink<S> implements EventSink<S> {
-  final EventSink<S> _outputSink;
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _DistinctUniqueStreamSink<S>
+    with ForwardingSinkMixin<S, S>
+    implements ForwardingSink<S, S> {
   final HashSet<S> _collection;
 
-  _DistinctUniqueStreamSink(this._outputSink,
+  _DistinctUniqueStreamSink(
       {bool Function(S e1, S e2) equals, int Function(S e) hashCodeMethod})
       : _collection = HashSet<S>(equals: equals, hashCode: hashCodeMethod);
 
   @override
-  void add(S data) {
+  void add(EventSink<S> sink, S data) {
     if (_collection.add(data)) {
-      _outputSink.add(data);
+      sink.add(data);
     }
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
-
-  @override
-  void close() {
+  void close(EventSink<S> sink) {
     _collection.clear();
-    _outputSink.close();
+    sink.close();
   }
 }
 
@@ -60,9 +61,9 @@ class DistinctUniqueStreamTransformer<S> extends StreamTransformerBase<S, S> {
   DistinctUniqueStreamTransformer({this.equals, this.hashCodeMethod});
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
       stream,
-      (sink) => _DistinctUniqueStreamSink<S>(sink,
+      _DistinctUniqueStreamSink(
           equals: equals, hashCodeMethod: hashCodeMethod));
 }
 

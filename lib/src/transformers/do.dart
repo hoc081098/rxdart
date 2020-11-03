@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DoStreamSink<S> implements ForwardingSink<S, S> {
-  final Object Function() _onCancel;
+  final FutureOr<void> Function() _onCancel;
   final void Function(S event) _onData;
   final void Function() _onDone;
   final void Function(Notification<S> notification) _onEach;
@@ -74,31 +74,13 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   FutureOr<void> onCancel(EventSink<S> sink) => _onCancel?.call();
 
   @override
-  void onListen(EventSink<S> sink) {
-    try {
-      _onListen?.call();
-    } catch (e, s) {
-      sink.addError(e, s);
-    }
-  }
+  void onListen(EventSink<S> sink) => _onListen?.call();
 
   @override
-  void onPause(EventSink<S> sink) {
-    try {
-      _onPause?.call();
-    } catch (e, s) {
-      sink.addError(e, s);
-    }
-  }
+  void onPause(EventSink<S> sink) => _onPause?.call();
 
   @override
-  void onResume(EventSink<S> sink) {
-    try {
-      _onResume?.call();
-    } catch (e, s) {
-      sink.addError(e, s);
-    }
-  }
+  void onResume(EventSink<S> sink) => _onResume?.call();
 }
 
 /// Invokes the given callback at the corresponding point the the stream
@@ -138,7 +120,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 ///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// fires when all subscriptions have cancelled.
-  final Object Function() onCancel;
+  final FutureOr<void> Function() onCancel;
 
   /// fires when data is emitted
   final void Function(S event) onData;
@@ -214,7 +196,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .listen(null);
   ///
   ///     subscription.cancel(); // prints 'hi'
-  Stream<T> doOnCancel(void Function() onCancel) =>
+  Stream<T> doOnCancel(FutureOr<void> Function() onCancel) =>
       transform(DoStreamTransformer<T>(onCancel: onCancel));
 
   /// Invokes the given callback function when the stream emits an item. In
