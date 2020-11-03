@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/stream_pipe_to_sink.dart';
 
 class _SwitchIfEmptyStreamSink<S>
     with ForwardingSinkMixin<S, S>

@@ -51,11 +51,3 @@ mixin ForwardingSinkMixin<T, R> implements ForwardingSink<T, R> {
   @override
   void close(EventSink<R> sink) => sink.close();
 }
-
-extension StreamPipeToForwardingSink<T> on Stream<T> {
-  StreamSubscription<T> pipeTo(EventSink<T> sink) => listen(
-        sink.add,
-        onError: sink.addError,
-        onDone: sink.close,
-      );
-}
