@@ -3,43 +3,37 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
+class _WithLatestFromStreamSink<S, T, R>
+    with ForwardingSinkMixin<S, R>
+    implements ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
-  final List<bool> _hasValues;
-  final List<T> _latestValues;
+
+  List<T> _latestValues;
+  final int _length;
+  var _emitted = 0;
   List<StreamSubscription<T>> _subscriptions;
 
   _WithLatestFromStreamSink(this._latestFromStreams, this._combiner)
-      : _hasValues = List.filled(_latestFromStreams.length, false),
-        _latestValues = List<T>(_latestFromStreams.length);
+      : _length = _latestFromStreams.length {
+    _latestValues = List<T>(_length);
+  }
 
   @override
   void add(EventSink<R> sink, S data) {
-    if (_hasValues.every((value) => value)) {
+    if (_emitted == _length) {
       sink.add(_combiner(data, List.unmodifiable(_latestValues)));
     }
   }
 
   @override
-  void addError(EventSink<R> sink, dynamic e, [st]) => sink.addError(e, st);
-
-  @override
-  void close(EventSink<R> sink) {
-    _subscriptions?.forEach((it) => it.cancel());
-    _subscriptions = null;
-    sink.close();
-  }
-
-  @override
-  FutureOr onCancel(EventSink<R> sink) {
-    Iterable<Future> futures = <Future>[];
-
-    if (_subscriptions != null && _subscriptions.isNotEmpty) {
-      futures = _subscriptions.map((it) => it.cancel()).whereType<Future>();
+  FutureOr<void> onCancel(EventSink<R> sink) {
+    if (_subscriptions.isNotEmpty) {
+      final futures = _subscriptions.map((s) => s.cancel());
+      if (futures.isNotEmpty) {
+        return Future.wait<Object>(futures);
+      }
     }
-
-    return futures.isNotEmpty ? Future.wait<dynamic>(futures) : null;
   }
 
   @override
@@ -48,9 +42,14 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
 
     final mapper = (Stream<T> stream) {
       var i = index++;
+      var hasValue = false;
+
       return stream.listen(
         (it) {
-          _hasValues[i] = true;
+          if (!hasValue) {
+            _emitted++;
+            hasValue = true;
+          }
           _latestValues[i] = it;
         },
         onError: sink.addError,
@@ -61,12 +60,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
   }
 
   @override
-  void onPause(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.pause());
+  void onPause(EventSink<R> sink) => _subscriptions.forEach((s) => s.pause());
 
   @override
-  void onResume(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.resume());
+  void onResume(EventSink<R> sink) => _subscriptions.forEach((s) => s.resume());
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
@@ -133,7 +130,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R> with2<T, A, B, R>(
+  static WithLatestFromStreamTransformer<T, Object, R> with2<T, A, B, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
     R Function(T t, A a, B b) fn,
@@ -141,7 +138,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [latestFromStream1, latestFromStream2],
       (s, values) => fn(s, values[0] as A, values[1] as B),
     );
@@ -149,7 +146,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R> with3<T, A, B, C, R>(
+  static WithLatestFromStreamTransformer<T, Object, R> with3<T, A, B, C, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
@@ -158,7 +155,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -177,7 +174,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R> with4<T, A, B, C, D, R>(
+  static WithLatestFromStreamTransformer<T, Object, R> with4<T, A, B, C, D, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
@@ -187,7 +184,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -208,7 +205,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R>
+  static WithLatestFromStreamTransformer<T, Object, R>
       with5<T, A, B, C, D, E, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -220,7 +217,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -243,7 +240,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R>
+  static WithLatestFromStreamTransformer<T, Object, R>
       with6<T, A, B, C, D, E, F, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -256,7 +253,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -281,7 +278,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R>
+  static WithLatestFromStreamTransformer<T, Object, R>
       with7<T, A, B, C, D, E, F, G, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -295,7 +292,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -322,7 +319,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R>
+  static WithLatestFromStreamTransformer<T, Object, R>
       with8<T, A, B, C, D, E, F, G, H, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -337,7 +334,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,
@@ -366,7 +363,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from all [latestFromStream]s using the provided function [fn].
-  static WithLatestFromStreamTransformer<T, dynamic, R>
+  static WithLatestFromStreamTransformer<T, Object, R>
       with9<T, A, B, C, D, E, F, G, H, I, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -382,7 +379,7 @@ class WithLatestFromStreamTransformer<S, T, R>
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
     }
-    return WithLatestFromStreamTransformer<T, dynamic, R>(
+    return WithLatestFromStreamTransformer<T, Object, R>(
       [
         latestFromStream1,
         latestFromStream2,

@@ -69,7 +69,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   bool get hasListener => _controller.hasListener;
 
   @override
-  Future<dynamic> get done => _controller.done;
+  Future<Object> get done => _controller.done;
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
@@ -93,7 +93,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   void onAddError(Object error, [StackTrace stackTrace]) {}
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError = true}) {
+  Future<Object> addStream(Stream<T> source, {bool cancelOnError = true}) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add items while items are being added from addStream');
@@ -112,7 +112,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
     source.listen((T event) {
       _add(event);
-    }, onError: (dynamic e, StackTrace s) {
+    }, onError: (Object e, StackTrace s) {
       _addError(e, s);
 
       if (cancelOnError) {
@@ -147,7 +147,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   void onAdd(T event) {}
 
   @override
-  Future<dynamic> close() {
+  Future<Object> close() {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot close the subject while items are being added from addStream');
@@ -182,11 +182,11 @@ class _StreamSinkWrapper<T> implements StreamSink<T> {
   }
 
   @override
-  Future<dynamic> close() => _target.close();
+  Future<Object> close() => _target.close();
 
   @override
-  Future<dynamic> addStream(Stream<T> source) => _target.addStream(source);
+  Future<Object> addStream(Stream<T> source) => _target.addStream(source);
 
   @override
-  Future<dynamic> get done => _target.done;
+  Future<Object> get done => _target.done;
 }

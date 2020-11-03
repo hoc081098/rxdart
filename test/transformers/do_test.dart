@@ -29,8 +29,8 @@ void main() {
       final subject = BehaviorSubject<int>(sync: true);
       final stream = subject.stream.doOnError((e, s) => count++);
 
-      stream.listen(null, onError: (dynamic e, dynamic s) {});
-      stream.listen(null, onError: (dynamic e, dynamic s) {});
+      stream.listen(null, onError: (Object e, Object s) {});
+      stream.listen(null, onError: (Object e, Object s) {});
 
       subject.addError(Exception());
       subject.addError(Exception());
@@ -151,7 +151,7 @@ void main() {
       });
 
       await expectLater(stream,
-          emitsInOrder(<dynamic>[1, emitsError(isException), emitsDone]));
+          emitsInOrder(<Object>[1, emitsError(isException), emitsDone]));
 
       await expectLater(actual, [
         Notification.onData(1),
@@ -244,8 +244,8 @@ void main() {
       final streamA = Stream.value(1).transform(transformer),
           streamB = Stream.value(1).transform(transformer);
 
-      await expectLater(streamA, emitsInOrder(<dynamic>[1, emitsDone]));
-      await expectLater(streamB, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(streamA, emitsInOrder(<Object>[1, emitsDone]));
+      await expectLater(streamB, emitsInOrder(<Object>[1, emitsDone]));
 
       expect(callCount, 2);
     });
@@ -286,7 +286,7 @@ void main() {
 
       // a cancel() call may occur after the controller is already closed
       // in that case, the error is forwarded to the current [Zone]
-      runZoned(
+      runZonedGuarded(
         () {
           Stream.value(1)
               .doOnCancel(() =>
@@ -299,9 +299,10 @@ void main() {
               .listen(null)
                 ..cancel();
         },
-        onError: expectAsync2(
-            (Exception e, [StackTrace s]) => expect(e, isException),
-            count: 2),
+        expectAsync2(
+          (Object e, StackTrace s) => expect(e, isException),
+          count: 2,
+        ),
       );
 
       Stream.value(1)

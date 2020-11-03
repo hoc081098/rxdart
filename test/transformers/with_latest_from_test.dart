@@ -406,7 +406,7 @@ void main() {
     final controller = StreamController<int>();
 
     final stream = controller.stream
-        .withLatestFrom(Stream<int>.empty(), (_, dynamic __) => true);
+        .withLatestFrom(Stream<int>.empty(), (_, Object __) => true);
 
     stream.listen(null);
     expect(() => stream.listen(null), throwsStateError);
@@ -466,7 +466,7 @@ class _Tuple {
   ]);
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         other is _Tuple &&
             item1 == other.item1 &&

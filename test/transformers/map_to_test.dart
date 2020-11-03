@@ -6,13 +6,13 @@ import 'package:test/test.dart';
 void main() {
   test('Rx.mapTo', () async {
     await expectLater(Rx.range(1, 4).mapTo(true),
-        emitsInOrder(<dynamic>[true, true, true, true, emitsDone]));
+        emitsInOrder(<Object>[true, true, true, true, emitsDone]));
   });
 
   test('Rx.mapTo.shouldThrow', () async {
     await expectLater(
         Rx.range(1, 4).concatWith([Stream<int>.error(Error())]).mapTo(true),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           true,
           true,
           true,

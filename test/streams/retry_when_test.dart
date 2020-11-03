@@ -8,28 +8,28 @@ void main() {
   test('Rx.retryWhen', () {
     expect(
       Rx.retryWhen(_sourceStream(3), _alwaysThrow),
-      emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
+      emitsInOrder(<Object>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream', () {
     expect(
       RetryWhenStream(_sourceStream(3), _alwaysThrow),
-      emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
+      emitsInOrder(<Object>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.onDone', () {
     expect(
       RetryWhenStream(_sourceStream(3), _alwaysThrow),
-      emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
+      emitsInOrder(<Object>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.infinite.retries', () {
     expect(
       RetryWhenStream(_sourceStream(1000, 2), _neverThrow).take(6),
-      emitsInOrder(<dynamic>[0, 1, 0, 1, 0, 1, emitsDone]),
+      emitsInOrder(<Object>[0, 1, 0, 1, 0, 1, emitsDone]),
     );
   });
 
@@ -38,7 +38,7 @@ void main() {
 
     expect(
       RetryWhenStream(_getStreamWithExtras(retries), _neverThrow).take(6),
-      emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]),
+      emitsInOrder(<Object>[1, 1, 1, 2, emitsDone]),
     );
   });
 
@@ -69,7 +69,7 @@ void main() {
     expect(
         streamWithError,
         emitsInOrder(
-            <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
+            <Object>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
@@ -77,7 +77,7 @@ void main() {
 
     await expectLater(
         streamWithError,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           emitsError(
             predicate<RetryError>((a) {
               return a.errors.length == 1 &&
@@ -111,10 +111,10 @@ Stream<int> Function() _sourceStream(int i, [int throwAt]) {
           Stream.fromIterable(range(i)).map((i) => i == throwAt ? throw i : i);
 }
 
-Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
+Stream<void> _alwaysThrow(Object e, StackTrace s) =>
     Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
+Stream<void> _neverThrow(Object e, StackTrace s) => Stream.value('');
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;

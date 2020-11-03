@@ -18,7 +18,7 @@ void main() {
     await expectLater(
         getStream(4).buffer(
             Stream<Null>.periodic(const Duration(milliseconds: 160)).take(3)),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -31,7 +31,7 @@ void main() {
             Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'end')).startWith('start').buffer(
             Stream<Null>.periodic(const Duration(milliseconds: 40)).take(10)),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const ['start'], // after 40ms
           const <String>[], // 80ms
           const <String>[], // 120ms
@@ -50,7 +50,7 @@ void main() {
         controller.stream
             .buffer(Stream<Null>.periodic(const Duration(seconds: 3)))
             .take(1),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
@@ -64,7 +64,7 @@ void main() {
 
     await expectLater(
         getStream(4).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -72,7 +72,7 @@ void main() {
 
     await expectLater(
         getStream(4).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -88,13 +88,13 @@ void main() {
     // listen twice on same stream
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
         ]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[emitsDone]));
   });
 
   test('Rx.buffer.error.shouldThrowA', () async {
@@ -104,8 +104,10 @@ void main() {
         emitsError(isException));
   });
 
-  test('Rx.buffer.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).buffer(null),
-        emitsError(isArgumentError));
+  test('Rx.buffer.error.shouldThrowB', () {
+    expect(
+      () => Stream.fromIterable(const [1, 2, 3, 4]).buffer(null),
+      throwsArgumentError,
+    );
   });
 }

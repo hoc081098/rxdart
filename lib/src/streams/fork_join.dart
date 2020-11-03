@@ -27,7 +27,7 @@ import 'dart:async';
 ///
 /// This constructor takes in an `Iterable<Stream<T>>` and outputs a
 /// `Stream<Iterable<T>>` whenever any of the values change from the source
-/// stream. This is useful with a dynamic number of source streams!
+/// stream. This is useful with a Object number of source streams!
 ///
 ///     ForkJoinStream.list<String>([
 ///       Stream.fromIterable(['a']),
@@ -87,28 +87,28 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine2<A, B, R>(
+  static ForkJoinStream<Object, R> combine2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
     R Function(A a, B b) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamOne, streamTwo],
-        (List<dynamic> values) => combiner(values[0] as A, values[1] as B),
+        (List<Object> values) => combiner(values[0] as A, values[1] as B),
       );
 
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine3<A, B, C, R>(
+  static ForkJoinStream<Object, R> combine3<A, B, C, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
     R Function(A a, B b, C c) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamA, streamB, streamC],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -120,16 +120,16 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine4<A, B, C, D, R>(
+  static ForkJoinStream<Object, R> combine4<A, B, C, D, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
     Stream<D> streamD,
     R Function(A a, B b, C c, D d) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamA, streamB, streamC, streamD],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -142,7 +142,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine5<A, B, C, D, E, R>(
+  static ForkJoinStream<Object, R> combine5<A, B, C, D, E, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -150,9 +150,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<E> streamE,
     R Function(A a, B b, C c, D d, E e) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamA, streamB, streamC, streamD, streamE],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -166,7 +166,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine6<A, B, C, D, E, F, R>(
+  static ForkJoinStream<Object, R> combine6<A, B, C, D, E, F, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -175,9 +175,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<F> streamF,
     R Function(A a, B b, C c, D d, E e, F f) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamA, streamB, streamC, streamD, streamE, streamF],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -192,7 +192,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine7<A, B, C, D, E, F, G, R>(
+  static ForkJoinStream<Object, R> combine7<A, B, C, D, E, F, G, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -202,9 +202,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<G> streamG,
     R Function(A a, B b, C c, D d, E e, F f, G g) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [streamA, streamB, streamC, streamD, streamE, streamF, streamG],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -220,7 +220,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine8<A, B, C, D, E, F, G, H, R>(
+  static ForkJoinStream<Object, R> combine8<A, B, C, D, E, F, G, H, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -231,7 +231,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<H> streamH,
     R Function(A a, B b, C c, D d, E e, F f, G g, H h) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [
           streamA,
           streamB,
@@ -242,7 +242,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
           streamG,
           streamH
         ],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,
@@ -259,7 +259,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
   /// then calls the [combiner] to emit an event of type [R].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<dynamic, R> combine9<A, B, C, D, E, F, G, H, I, R>(
+  static ForkJoinStream<Object, R> combine9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -271,7 +271,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<I> streamI,
     R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) combiner,
   ) =>
-      ForkJoinStream<dynamic, R>(
+      ForkJoinStream<Object, R>(
         [
           streamA,
           streamB,
@@ -283,7 +283,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
           streamH,
           streamI
         ],
-        (List<dynamic> values) {
+        (List<Object> values) {
           return combiner(
             values[0] as A,
             values[1] as B,

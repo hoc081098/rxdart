@@ -80,7 +80,7 @@ void main() {
 
       await expectLater(
           subject,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             1,
             emitsError(isException),
             emitsError(isException),
@@ -88,7 +88,7 @@ void main() {
           ]));
       await expectLater(
           subject,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             1,
             emitsError(isException),
             emitsError(isException),
@@ -96,7 +96,7 @@ void main() {
           ]));
       await expectLater(
           subject,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             1,
             emitsError(isException),
             emitsError(isException),
@@ -151,7 +151,7 @@ void main() {
       subject.add(1);
       scheduleMicrotask(() => subject.close());
 
-      await expectLater(subject.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(subject.stream, emitsInOrder(<Object>[1, emitsDone]));
       await expectLater(subject.isClosed, isTrue);
     });
 

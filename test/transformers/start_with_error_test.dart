@@ -12,7 +12,7 @@ void main() {
     const expectedOutput = [1, 2, 3, 4];
 
     await expectLater(_getStream().transform(transformer),
-        emitsInOrder(<dynamic>[emitsError(isException), ...expectedOutput]));
+        emitsInOrder(<Object>[emitsError(isException), ...expectedOutput]));
   });
 
   test('Rx.startWithError.reusable', () async {
@@ -21,9 +21,9 @@ void main() {
     const expectedOutput = [1, 2, 3, 4];
 
     await expectLater(_getStream().transform(transformer),
-        emitsInOrder(<dynamic>[emitsError(isException), ...expectedOutput]));
+        emitsInOrder(<Object>[emitsError(isException), ...expectedOutput]));
     await expectLater(_getStream().transform(transformer),
-        emitsInOrder(<dynamic>[emitsError(isException), ...expectedOutput]));
+        emitsInOrder(<Object>[emitsError(isException), ...expectedOutput]));
   });
 
   test('Rx.startWithError.asBroadcastStream', () async {
@@ -36,7 +36,7 @@ void main() {
     await expectLater(
         stream,
         emitsInOrder(
-            <dynamic>[emitsError(isException), ...expectedOutput, emitsDone]));
+            <Object>[emitsError(isException), ...expectedOutput, emitsDone]));
     await expectLater(stream, emitsDone);
   });
 

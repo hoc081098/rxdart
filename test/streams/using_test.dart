@@ -33,7 +33,7 @@ Future<void> main() async {
 
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[
+      emitsInOrder(<Object>[
         1,
         emitsDone,
       ]),
@@ -60,7 +60,7 @@ Future<void> main() async {
 
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), emitsDone]),
     );
 
     expect(calledStreamFactory, false);
@@ -76,7 +76,7 @@ Future<void> main() async {
 
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), emitsDone]),
     );
 
     verify(resource.close()).called(1);
@@ -187,7 +187,7 @@ Future<void> main() async {
 
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[0, 1, 2, 3, emitsDone]),
+      emitsInOrder(<Object>[0, 1, 2, 3, emitsDone]),
     );
 
     verify(resource.closeSync()).called(1);

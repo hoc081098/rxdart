@@ -5,17 +5,15 @@ import 'dart:async';
 /// This makes it suitable for certain rx transformers that need to
 /// take action after onListen, onPause, onResume or onCancel.
 ///
-/// The [ForwardingSink] has been designed to handle asynchronous events from
-/// [Stream]s. See, for example, [Stream.eventTransformed] which uses
-/// `EventSink`s to transform events.
+/// The [ForwardingSink] has been designed to handle asynchronous events from [Stream]s.
 abstract class ForwardingSink<T, R> {
-  /// Handle data event
+  /// Handle data event.
   void add(EventSink<R> sink, T data);
 
-  /// Handle error event
-  void addError(EventSink<R> sink, dynamic error, [StackTrace st]);
+  /// Handle error event.
+  void addError(EventSink<R> sink, Object error, StackTrace st);
 
-  /// Handle close event
+  /// Handle close event.
   void close(EventSink<R> sink);
 
   /// Fires when a listener subscribes on the underlying [Stream].
@@ -28,5 +26,36 @@ abstract class ForwardingSink<T, R> {
   void onResume(EventSink<R> sink);
 
   /// Fires when a subscriber cancels.
-  FutureOr onCancel(EventSink<R> sink);
+  FutureOr<void> onCancel(EventSink<R> sink);
+}
+
+/// Base implementation of [ForwardingSink] class.
+/// This [ForwardingSink] mixin implements all [ForwardingSink] methods except [add].
+mixin ForwardingSinkMixin<T, R> implements ForwardingSink<T, R> {
+  @override
+  void onListen(EventSink<R> sink) {}
+
+  @override
+  void onPause(EventSink<R> sink) {}
+
+  @override
+  void onResume(EventSink<R> sink) {}
+
+  @override
+  FutureOr<void> onCancel(EventSink<R> sink) {}
+
+  @override
+  void addError(EventSink<R> sink, Object error, StackTrace st) =>
+      sink.addError(error, st);
+
+  @override
+  void close(EventSink<R> sink) => sink.close();
+}
+
+extension StreamPipeToForwardingSink<T> on Stream<T> {
+  StreamSubscription<T> pipeTo(EventSink<T> sink) => listen(
+        sink.add,
+        onError: sink.addError,
+        onDone: sink.close,
+      );
 }

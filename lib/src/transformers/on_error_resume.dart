@@ -18,7 +18,7 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, StackTrace st) {
     _inRecovery = true;
 
     final recoveryStream = _recoveryFn(e);
@@ -43,10 +43,10 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
+  FutureOr<void> onCancel(EventSink<S> sink) {
     return _recoverySubscriptions.isEmpty
         ? null
-        : Future.wait<dynamic>(
+        : Future.wait<Object>(
             _recoverySubscriptions
                 .map((subscription) => subscription?.cancel())
                 .where((future) => future != null),
@@ -80,7 +80,7 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
 /// ### Example
 ///
 ///     Stream<int>.error(Exception())
-///       .onErrorResume((dynamic e) =>
+///       .onErrorResume((Object e) =>
 ///           Stream.value(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
@@ -117,7 +117,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .onErrorResumeNext(Stream.fromIterable([1, 2, 3]))
   ///       .listen(print); // prints 1, 2, 3
   Stream<T> onErrorResumeNext(Stream<T> recoveryStream) => transform(
-      OnErrorResumeStreamTransformer<T>((dynamic e) => recoveryStream));
+      OnErrorResumeStreamTransformer<T>((Object e) => recoveryStream));
 
   /// Intercepts error events and switches to a recovery stream created by the
   /// provided [recoveryFn].
@@ -137,10 +137,10 @@ extension OnErrorExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     ErrorStream(Exception())
-  ///       .onErrorResume((dynamic e) =>
+  ///       .onErrorResume((Object e) =>
   ///           Stream.fromIterable([e is StateError ? 1 : 0])
   ///       .listen(print); // prints 0
-  Stream<T> onErrorResume(Stream<T> Function(dynamic error) recoveryFn) =>
+  Stream<T> onErrorResume(Stream<T> Function(Object error) recoveryFn) =>
       transform(OnErrorResumeStreamTransformer<T>(recoveryFn));
 
   /// instructs a Stream to emit a particular item when it encounters an
@@ -160,7 +160,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturn(T returnValue) =>
       transform(OnErrorResumeStreamTransformer<T>(
-          (dynamic e) => Stream.value(returnValue)));
+          (Object e) => Stream.value(returnValue)));
 
   /// instructs a Stream to emit a particular item created by the
   /// [returnFn] when it encounters an error, and then terminate normally.
@@ -181,7 +181,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///     ErrorStream(Exception())
   ///       .onErrorReturnWith((e) => e is Exception ? 1 : 0)
   ///       .listen(print); // prints 1
-  Stream<T> onErrorReturnWith(T Function(dynamic error) returnFn) =>
+  Stream<T> onErrorReturnWith(T Function(Object error) returnFn) =>
       transform(OnErrorResumeStreamTransformer<T>(
-          (dynamic e) => Stream.value(returnFn(e))));
+          (Object e) => Stream.value(returnFn(e))));
 }

@@ -16,7 +16,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, StackTrace st) {
     _safeAddFirstEvent(sink);
     sink.addError(e, st);
   }
@@ -28,7 +28,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {}
+  FutureOr<void> onCancel(EventSink<S> sink) {}
 
   @override
   void onListen(EventSink<S> sink) {

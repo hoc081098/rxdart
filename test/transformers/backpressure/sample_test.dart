@@ -15,7 +15,7 @@ void main() {
   test('Rx.sample', () async {
     final stream = _getStream().sample(_getSampleStream());
 
-    await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sample.reusable', () async {
@@ -24,8 +24,8 @@ void main() {
     final streamA = _getStream().transform(transformer);
     final streamB = _getStream().transform(transformer);
 
-    await expectLater(streamA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-    await expectLater(streamB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(streamA, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
+    await expectLater(streamB, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sample.onDone', () async {
@@ -93,7 +93,7 @@ void main() {
     });
 
     await expectLater(
-        controller.stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+        controller.stream, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
 
     subscription.pause();
     subscription.resume();

@@ -10,33 +10,33 @@ void main() {
     const retries = 3;
 
     await expectLater(Rx.retry(_getRetryStream(retries), retries),
-        emitsInOrder(<dynamic>[1, emitsDone]));
+        emitsInOrder(<Object>[1, emitsDone]));
   });
 
   test('RetryStream', () async {
     const retries = 3;
 
     await expectLater(RetryStream<int>(_getRetryStream(retries), retries),
-        emitsInOrder(<dynamic>[1, emitsDone]));
+        emitsInOrder(<Object>[1, emitsDone]));
   });
 
   test('RetryStream.onDone', () async {
     const retries = 3;
 
     await expectLater(RetryStream(_getRetryStream(retries), retries),
-        emitsInOrder(<dynamic>[1, emitsDone]));
+        emitsInOrder(<Object>[1, emitsDone]));
   });
 
   test('RetryStream.infinite.retries', () async {
     await expectLater(RetryStream(_getRetryStream(1000)),
-        emitsInOrder(<dynamic>[1, emitsDone]));
+        emitsInOrder(<Object>[1, emitsDone]));
   });
 
   test('RetryStream.emits.original.items', () async {
     const retries = 3;
 
     await expectLater(RetryStream(_getStreamWithExtras(retries), retries),
-        emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
+        emitsInOrder(<Object>[1, 1, 1, 2, emitsDone]));
   });
 
   test('RetryStream.single.subscription', () async {

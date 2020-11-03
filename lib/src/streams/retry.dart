@@ -55,7 +55,7 @@ class RetryStream<T> extends Stream<T> {
 
     retry = ([_]) {
       _subscription = streamFactory().listen(_controller.add,
-          onError: (dynamic e, StackTrace s) {
+          onError: (Object e, StackTrace s) {
         _subscription.cancel();
 
         _errors.add(ErrorAndStackTrace(e, s));

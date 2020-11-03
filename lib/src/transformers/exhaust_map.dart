@@ -16,7 +16,13 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
       return;
     }
 
-    final mappedStream = _mapper(data);
+    Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _mapperSubscription = mappedStream.listen(
       sink.add,
@@ -32,7 +38,8 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, StackTrace st) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {
@@ -42,7 +49,7 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) => _mapperSubscription?.cancel();
+  FutureOr<void> onCancel(EventSink<T> sink) => _mapperSubscription?.cancel();
 
   @override
   void onListen(EventSink<T> sink) {}

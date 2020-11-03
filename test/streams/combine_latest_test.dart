@@ -27,7 +27,7 @@ void main() {
 
     expect(
       combined,
-      emitsInOrder(<dynamic>[
+      emitsInOrder(<Object>[
         [1, 2, 3],
         [2, 2, 3],
         [3, 2, 3],
@@ -52,7 +52,7 @@ void main() {
 
     expect(
       combined,
-      emitsInOrder(<dynamic>[6, 7, 8]),
+      emitsInOrder(<Object>[6, 7, 8]),
     );
   });
 
@@ -310,7 +310,7 @@ void main() {
   test('Rx.combineLatest.error.shouldThrowA', () async {
     final streamWithError = Rx.combineLatest4(Stream.value(1), Stream.value(1),
         Stream.value(1), Stream<int>.error(Exception()),
-        (int a_value, int b_value, int c_value, dynamic _) {
+        (int a_value, int b_value, int c_value, Object _) {
       return '$a_value $b_value $c_value $_';
     });
 

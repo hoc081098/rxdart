@@ -86,7 +86,7 @@ void main() {
       Stream.value(1)
           .flatMap((_) => Stream.value(2))
           .flatMap((_) => Stream.value(3)),
-      emitsInOrder(<dynamic>[3, emitsDone]),
+      emitsInOrder(<Object>[3, emitsDone]),
     );
   });
   test('Rx.flatMap accidental broadcast', () async {

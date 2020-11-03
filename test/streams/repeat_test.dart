@@ -9,14 +9,14 @@ void main() {
     const retries = 3;
 
     await expectLater(Rx.repeat(_getRepeatStream('A'), retries),
-        emitsInOrder(<dynamic>['A0', 'A1', 'A2', emitsDone]));
+        emitsInOrder(<Object>['A0', 'A1', 'A2', emitsDone]));
   });
 
   test('RepeatStream', () async {
     const retries = 3;
 
     await expectLater(RepeatStream(_getRepeatStream('A'), retries),
-        emitsInOrder(<dynamic>['A0', 'A1', 'A2', emitsDone]));
+        emitsInOrder(<Object>['A0', 'A1', 'A2', emitsDone]));
   });
 
   test('RepeatStream.onDone', () async {
@@ -61,7 +61,7 @@ void main() {
 
     await expectLater(
         streamWithError,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           'A0',
           emitsError(TypeMatcher<Error>()),
           'A0',

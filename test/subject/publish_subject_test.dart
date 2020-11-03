@@ -21,7 +21,7 @@ void main() {
       });
 
       await expectLater(
-          subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+          subject.stream, emitsInOrder(<Object>[1, 2, 3, emitsDone]));
     });
 
     test(
@@ -37,7 +37,7 @@ void main() {
         subject.close();
       });
 
-      await expectLater(subject, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      await expectLater(subject, emitsInOrder(<Object>[1, 2, 3, emitsDone]));
     });
 
     test('emits done event to listeners when the subject is closed', () async {
@@ -48,7 +48,7 @@ void main() {
       scheduleMicrotask(() => subject.add(1));
       scheduleMicrotask(() => subject.close());
 
-      await expectLater(subject.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(subject.stream, emitsInOrder(<Object>[1, emitsDone]));
       await expectLater(subject.isClosed, isTrue);
     });
 
@@ -62,7 +62,7 @@ void main() {
       scheduleMicrotask(() => subject.add(1));
       scheduleMicrotask(() => subject.close());
 
-      await expectLater(subject, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(subject, emitsInOrder(<Object>[1, emitsDone]));
       await expectLater(subject.isClosed, isTrue);
     });
 
@@ -283,7 +283,7 @@ void main() {
       });
 
       await expectLater(
-          subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+          subject.stream, emitsInOrder(<Object>[1, 2, 3, emitsDone]));
     });
 
     test('is always treated as a broadcast Stream', () async {

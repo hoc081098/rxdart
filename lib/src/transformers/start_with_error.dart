@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithErrorStreamSink<S>
+    with ForwardingSinkMixin<S, S>
+    implements ForwardingSink<S, S> {
   final Object _e;
   final StackTrace _st;
   var _isFirstEventAdded = false;
@@ -17,9 +19,9 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object error, StackTrace st) {
     _safeAddFirstEvent(sink);
-    sink.addError(e, st);
+    sink.addError(error, st);
   }
 
   @override
@@ -29,18 +31,8 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {}
-
-  @override
-  void onListen(EventSink<S> sink) {
-    scheduleMicrotask(() => _safeAddFirstEvent(sink));
-  }
-
-  @override
-  void onPause(EventSink<S> sink) {}
-
-  @override
-  void onResume(EventSink<S> sink) {}
+  void onListen(EventSink<S> sink) =>
+      scheduleMicrotask(() => _safeAddFirstEvent(sink));
 
   // Immediately setting the starting value when onListen trigger can
   // result in an Exception (might be a bug in dart:async?)
@@ -76,5 +68,5 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithErrorStreamSink(error, stackTrace));
+      forwardStream<S, S>(stream, _StartWithErrorStreamSink(error, stackTrace));
 }

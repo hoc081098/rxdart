@@ -11,7 +11,7 @@ void main() {
   test('Rx.sampleTime', () async {
     final stream = _getStream().sampleTime(const Duration(milliseconds: 35));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sampleTime.reusable', () async {
@@ -86,6 +86,6 @@ void main() {
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 50)));
 
     await expectLater(
-        controller.stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+        controller.stream, emitsInOrder(<Object>[1, 3, 4, emitsDone]));
   });
 }

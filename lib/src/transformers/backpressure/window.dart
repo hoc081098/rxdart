@@ -111,8 +111,10 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .window(Stream.periodic(Duration(milliseconds: 160), (i) => i))
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Stream<Stream<T>> window(Stream window) =>
-      transform(WindowStreamTransformer((_) => window));
+  Stream<Stream<T>> window(Stream window) {
+    ArgumentError.checkNotNull(window, 'window');
+    return transform(WindowStreamTransformer((_) => window));
+  }
 
   /// Buffers a number of values from the source Stream by [count] then emits
   /// the buffer as a [Stream] and clears it, and starts a new buffer each

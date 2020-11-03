@@ -8,7 +8,7 @@ void main() {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[true, emitsDone]));
   });
 
   test('Rx.sequenceEqual.diffTime.equals', () async {
@@ -17,7 +17,7 @@ void main() {
             .take(5),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[true, emitsDone]));
   });
 
   test('Rx.sequenceEqual.equals.customCompare.equals', () async {
@@ -25,7 +25,7 @@ void main() {
         Stream.fromIterable(const [2, 2, 2, 2, 2]),
         equals: (int a, int b) => true);
 
-    await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[true, emitsDone]));
   });
 
   test('Rx.sequenceEqual.diffTime.notEquals', () async {
@@ -34,14 +34,14 @@ void main() {
             .take(5),
         Stream.fromIterable(const [1, 1, 1, 1, 1]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.notEquals', () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 5, 4]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.equals.customCompare.notEquals', () async {
@@ -49,14 +49,14 @@ void main() {
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
         equals: (int a, int b) => false);
 
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.notEquals.differentLength', () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.notEquals.differentLength.customCompare.notEquals',
@@ -68,7 +68,7 @@ void main() {
     // expect false,
     // even if the equals handler always returns true,
     // the emitted events length is different
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.equals.errors', () async {
@@ -76,7 +76,7 @@ void main() {
         Stream<void>.error(ArgumentError('error A')),
         Stream<void>.error(ArgumentError('error A')));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[true, emitsDone]));
   });
 
   test('Rx.sequenceEqual.notEquals.errors', () async {
@@ -84,14 +84,14 @@ void main() {
         Stream<void>.error(ArgumentError('error A')),
         Stream<void>.error(ArgumentError('error B')));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[false, emitsDone]));
   });
 
   test('Rx.sequenceEqual.single.subscription', () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[true, emitsDone]));
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 

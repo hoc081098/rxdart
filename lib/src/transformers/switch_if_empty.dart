@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
+class _SwitchIfEmptyStreamSink<S>
+    with ForwardingSinkMixin<S, S>
+    implements ForwardingSink<S, S> {
   final Stream<S> _fallbackStream;
 
   var _isEmpty = true;
@@ -18,28 +20,16 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic error, [StackTrace st]) {
-    sink.addError(error, st);
-  }
-
-  @override
   void close(EventSink<S> sink) {
     if (_isEmpty) {
-      _fallbackSubscription = _fallbackStream.listen(
-        sink.add,
-        onError: sink.addError,
-        onDone: sink.close,
-      );
+      _fallbackSubscription = _fallbackStream.pipeTo(sink);
     } else {
       sink.close();
     }
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _fallbackSubscription?.cancel();
-
-  @override
-  void onListen(EventSink<S> sink) {}
+  FutureOr<void> onCancel(EventSink<S> sink) => _fallbackSubscription?.cancel();
 
   @override
   void onPause(EventSink<S> sink) => _fallbackSubscription?.pause();

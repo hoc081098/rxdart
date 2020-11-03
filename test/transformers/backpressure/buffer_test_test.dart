@@ -7,7 +7,7 @@ void main() {
   test('Rx.bufferTest', () async {
     await expectLater(
         Rx.range(1, 4).bufferTest((i) => i % 2 == 0),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -19,7 +19,7 @@ void main() {
 
     await expectLater(
         Stream.fromIterable(const [1, 2, 3, 4]).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -27,7 +27,7 @@ void main() {
 
     await expectLater(
         Stream.fromIterable(const [1, 2, 3, 4]).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -42,7 +42,7 @@ void main() {
     // listen twice on same stream
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone

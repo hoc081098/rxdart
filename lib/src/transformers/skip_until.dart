@@ -18,7 +18,8 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<S> sink, Object e, StackTrace st) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<S> sink) {
@@ -27,7 +28,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _otherSubscription?.cancel();
+  FutureOr<void> onCancel(EventSink<S> sink) => _otherSubscription?.cancel();
 
   @override
   void onListen(EventSink<S> sink) => _otherSubscription = _otherStream

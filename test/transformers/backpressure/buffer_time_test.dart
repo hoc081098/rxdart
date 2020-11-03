@@ -19,7 +19,7 @@ void main() {
   test('Rx.bufferTime', () async {
     await expectLater(
         getStream(4).bufferTime(const Duration(milliseconds: 160)),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -33,7 +33,7 @@ void main() {
 
     await expectLater(
         controller.stream.bufferTime(const Duration(seconds: 3)).take(1),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
@@ -45,14 +45,14 @@ void main() {
 
     await expectLater(
         getStream(4).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1], const [2, 3], // done
           emitsDone
         ]));
 
     await expectLater(
         getStream(4).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1], const [2, 3], // done
           emitsDone
         ]));
@@ -66,13 +66,13 @@ void main() {
     // listen twice on same stream
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
         ]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[emitsDone]));
   });
 
   test('Rx.bufferTime.error.shouldThrowA', () async {

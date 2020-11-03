@@ -16,7 +16,7 @@ void main() {
     final controller = StreamController<int>();
 
     final stream =
-        controller.stream.zipWith(Stream<int>.empty(), (_, dynamic __) => true);
+        controller.stream.zipWith(Stream<int>.empty(), (_, Object __) => true);
 
     stream.listen(null);
     expect(() => stream.listen(null), throwsStateError);

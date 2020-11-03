@@ -24,7 +24,7 @@ enum WindowStrategy {
 
 class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   final WindowStrategy _strategy;
-  final Stream<dynamic> Function(S event) _windowStreamFactory;
+  final Stream<Object> Function(S event) _windowStreamFactory;
   final T Function(S event) _onWindowStart;
   final T Function(List<S> queue) _onWindowEnd;
   final int _startBufferEvery;
@@ -35,7 +35,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   var skip = 0;
   var _hasData = false;
   var _mainClosed = false;
-  StreamSubscription<dynamic> _windowSubscription;
+  StreamSubscription<Object> _windowSubscription;
 
   _BackpressureStreamSink(
       this._strategy,
@@ -64,7 +64,8 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, StackTrace st) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {
@@ -89,7 +90,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) => _windowSubscription?.cancel();
+  FutureOr<void> onCancel(EventSink<T> sink) => _windowSubscription?.cancel();
 
   @override
   void onListen(EventSink<T> sink) {}
@@ -141,7 +142,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
     }
   }
 
-  StreamSubscription<dynamic> singleWindow(S event, EventSink<T> sink) =>
+  StreamSubscription<Object> singleWindow(S event, EventSink<T> sink) =>
       buildStream(event, sink).take(1).listen(
             null,
             onError: sink.addError,
@@ -150,14 +151,14 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
   // opens a new Window which is kept open until the main Stream
   // closes.
-  StreamSubscription<dynamic> multiWindow(S event, EventSink<T> sink) =>
+  StreamSubscription<Object> multiWindow(S event, EventSink<T> sink) =>
       buildStream(event, sink).listen(
-        (dynamic _) => resolveWindowEnd(sink),
+        (Object _) => resolveWindowEnd(sink),
         onError: sink.addError,
         onDone: () => resolveWindowEnd(sink),
       );
 
-  Stream<dynamic> buildStream(S event, EventSink<T> sink) {
+  Stream<Object> buildStream(S event, EventSink<T> sink) {
     Stream stream;
 
     _windowSubscription?.cancel();
@@ -292,7 +293,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final WindowStrategy strategy;
 
   /// Factory method used to create the [Stream] which will be buffered
-  final Stream<dynamic> Function(S event) windowStreamFactory;
+  final Stream<Object> Function(S event) windowStreamFactory;
 
   /// Handler which fires when the window opens
   final T Function(S event) onWindowStart;

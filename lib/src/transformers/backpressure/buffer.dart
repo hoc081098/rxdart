@@ -106,8 +106,10 @@ extension BufferExtensions<T> on Stream<T> {
   ///     Stream.periodic(Duration(milliseconds: 100), (i) => i)
   ///       .buffer(Stream.periodic(Duration(milliseconds: 160), (i) => i))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Stream<List<T>> buffer(Stream window) =>
-      transform(BufferStreamTransformer((_) => window));
+  Stream<List<T>> buffer(Stream window) {
+    ArgumentError.checkNotNull(window, 'window');
+    return transform(BufferStreamTransformer((_) => window));
+  }
 
   /// Buffers a number of values from the source Stream by [count] then
   /// emits the buffer and clears it, and starts a new buffer each

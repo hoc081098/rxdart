@@ -22,7 +22,7 @@ void main() {
     var count = 0;
 
     Stream<int>.error(Exception())
-        .onErrorResume((dynamic e) => _getStream())
+        .onErrorResume((Object e) => _getStream())
         .listen(expectAsync1((result) {
           expect(result, expected[count++]);
         }, count: expected.length));

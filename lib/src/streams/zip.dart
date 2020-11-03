@@ -64,29 +64,29 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip2<A, B, R>(
+  static ZipStream<Object, R> zip2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
     R Function(A a, B b) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamOne, streamTwo],
-      (List<dynamic> values) => zipper(values[0] as A, values[1] as B),
+      (List<Object> values) => zipper(values[0] as A, values[1] as B),
     );
   }
 
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip3<A, B, C, R>(
+  static ZipStream<Object, R> zip3<A, B, C, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
     R Function(A a, B b, C c) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -99,16 +99,16 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip4<A, B, C, D, R>(
+  static ZipStream<Object, R> zip4<A, B, C, D, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
     Stream<D> streamD,
     R Function(A a, B b, C c, D d) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC, streamD],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -122,7 +122,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip5<A, B, C, D, E, R>(
+  static ZipStream<Object, R> zip5<A, B, C, D, E, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -130,9 +130,9 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<E> streamE,
     R Function(A a, B b, C c, D d, E e) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC, streamD, streamE],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -147,7 +147,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip6<A, B, C, D, E, F, R>(
+  static ZipStream<Object, R> zip6<A, B, C, D, E, F, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -156,9 +156,9 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<F> streamF,
     R Function(A a, B b, C c, D d, E e, F f) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -174,7 +174,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip7<A, B, C, D, E, F, G, R>(
+  static ZipStream<Object, R> zip7<A, B, C, D, E, F, G, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -184,9 +184,9 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<G> streamG,
     R Function(A a, B b, C c, D d, E e, F f, G g) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -203,7 +203,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip8<A, B, C, D, E, F, G, H, R>(
+  static ZipStream<Object, R> zip8<A, B, C, D, E, F, G, H, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -214,9 +214,9 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<H> streamH,
     R Function(A a, B b, C c, D d, E e, F f, G g, H h) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG, streamH],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -234,7 +234,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
   /// [zipper] Function, whenever all of the provided [Stream]s have produced
   /// an element at a corresponding index.
-  static ZipStream<dynamic, R> zip9<A, B, C, D, E, F, G, H, I, R>(
+  static ZipStream<Object, R> zip9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
@@ -246,7 +246,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<I> streamI,
     R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) zipper,
   ) {
-    return ZipStream<dynamic, R>(
+    return ZipStream<Object, R>(
       [
         streamA,
         streamB,
@@ -258,7 +258,7 @@ class ZipStream<T, R> extends StreamView<R> {
         streamH,
         streamI
       ],
-      (List<dynamic> values) {
+      (List<Object> values) {
         return zipper(
           values[0] as A,
           values[1] as B,
@@ -342,7 +342,7 @@ class ZipStream<T, R> extends StreamView<R> {
             .forEach((subscription) => subscription.pause()),
         onResume: () => pendingSubscriptions
             .forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(subscriptions
+        onCancel: () => Future.wait<Object>(subscriptions
             .map((subscription) => subscription.cancel())
             .where((cancelFuture) => cancelFuture != null)));
 

@@ -9,7 +9,7 @@ void main() {
 
     final stream = TimerStream(value, Duration(milliseconds: 1));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[value, emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[value, emitsDone]));
   });
 
   test('TimerStream.single.subscription', () async {

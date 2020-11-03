@@ -7,7 +7,7 @@ void main() {
   test('Rx.bufferCount.noStartBufferEvery', () async {
     await expectLater(
         Rx.range(1, 4).bufferCount(2),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -17,7 +17,7 @@ void main() {
   test('Rx.bufferCount.noStartBufferEvery.includesEventOnClose', () async {
     await expectLater(
         Rx.range(1, 5).bufferCount(2),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           const [5],
@@ -28,7 +28,7 @@ void main() {
   test('Rx.bufferCount.startBufferEvery.count2startBufferEvery1', () async {
     await expectLater(
         Rx.range(1, 4).bufferCount(2, 1),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [2, 3],
           const [3, 4],
@@ -40,7 +40,7 @@ void main() {
   test('Rx.bufferCount.startBufferEvery.count3startBufferEvery2', () async {
     await expectLater(
         Rx.range(1, 8).bufferCount(3, 2),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3],
           const [3, 4, 5],
           const [5, 6, 7],
@@ -52,7 +52,7 @@ void main() {
   test('Rx.bufferCount.startBufferEvery.count3startBufferEvery4', () async {
     await expectLater(
         Rx.range(1, 8).bufferCount(3, 4),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3],
           const [5, 6, 7],
           emitsDone
@@ -64,7 +64,7 @@ void main() {
 
     await expectLater(
         Stream.fromIterable(const [1, 2, 3, 4]).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -72,7 +72,7 @@ void main() {
 
     await expectLater(
         Stream.fromIterable(const [1, 2, 3, 4]).transform(transformer),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -87,13 +87,13 @@ void main() {
     // listen twice on same stream
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
         ]));
 
-    await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>[emitsDone]));
   });
 
   test('Rx.bufferCount.error.shouldThrowA', () async {

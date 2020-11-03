@@ -21,7 +21,7 @@ void main() {
         getStream(4)
             .windowTime(const Duration(milliseconds: 160))
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -38,7 +38,7 @@ void main() {
             .windowTime(const Duration(seconds: 3))
             .asyncMap((stream) => stream.toList())
             .take(1),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
@@ -52,7 +52,7 @@ void main() {
         getStream(4)
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1], const [2, 3], // done
           emitsDone
         ]));
@@ -61,7 +61,7 @@ void main() {
         getStream(4)
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1], const [2, 3], // done
           emitsDone
         ]));

@@ -10,7 +10,7 @@ void main() {
   test('Rx.throttleTime', () async {
     await expectLater(
         _stream().throttleTime(const Duration(milliseconds: 250)).take(3),
-        emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+        emitsInOrder(<Object>[1, 4, 7, emitsDone]));
   });
 
   test('Rx.throttleTime.trailing', () async {
@@ -19,7 +19,7 @@ void main() {
             .throttleTime(const Duration(milliseconds: 250),
                 trailing: true, leading: false)
             .take(3),
-        emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
+        emitsInOrder(<Object>[3, 6, 9, emitsDone]));
   });
 
   test('Rx.throttleTime.reusable', () async {
@@ -27,10 +27,10 @@ void main() {
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
-        emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        emitsInOrder(<Object>[1, 4, emitsDone]));
 
     await expectLater(_stream().transform(transformer).take(2),
-        emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        emitsInOrder(<Object>[1, 4, emitsDone]));
   });
 
   test('Rx.throttleTime.asBroadcastStream', () async {
@@ -75,7 +75,7 @@ void main() {
     });
 
     await expectLater(
-        controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        controller.stream, emitsInOrder(<Object>[1, 4, emitsDone]));
 
     await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription
@@ -88,7 +88,7 @@ void main() {
             .interval(Duration(milliseconds: 25))
             .throttleTime(Duration(milliseconds: 50),
                 trailing: true, leading: false),
-        emitsInOrder(<dynamic>[1, 3, 5, 7, 9, emitsDone]));
+        emitsInOrder(<Object>[1, 3, 5, 7, 9, emitsDone]));
   });
 
   test('issue/417 trailing false', () async {
@@ -96,6 +96,6 @@ void main() {
         Stream.fromIterable([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
             .interval(Duration(milliseconds: 25))
             .throttleTime(Duration(milliseconds: 50), trailing: false),
-        emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
+        emitsInOrder(<Object>[0, 2, 4, 6, 8, emitsDone]));
   });
 }

@@ -9,7 +9,7 @@ void main() {
         Rx.range(1, 4)
             .windowTest((i) => i % 2 == 0)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -23,7 +23,7 @@ void main() {
         Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone
@@ -33,7 +33,7 @@ void main() {
         Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2],
           const [3, 4],
           emitsDone

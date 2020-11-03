@@ -22,7 +22,7 @@ void main() {
     await expectLater(
         _getStream().debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200)))),
-        emitsInOrder(<dynamic>[4, emitsDone]));
+        emitsInOrder(<Object>[4, emitsDone]));
   });
 
   test('Rx.debounce.dynamicWindow', () async {
@@ -35,7 +35,7 @@ void main() {
             ? Stream<bool>.value(true)
             : Stream<void>.fromFuture(
                 Future<void>.delayed(const Duration(milliseconds: 200)))),
-        emitsInOrder(<dynamic>[3, 4, emitsDone]));
+        emitsInOrder(<Object>[3, 4, emitsDone]));
   });
 
   test('Rx.debounce.reusable', () async {
@@ -43,10 +43,10 @@ void main() {
         (_) => Stream<void>.periodic(const Duration(milliseconds: 200)));
 
     await expectLater(_getStream().transform(transformer),
-        emitsInOrder(<dynamic>[4, emitsDone]));
+        emitsInOrder(<Object>[4, emitsDone]));
 
     await expectLater(_getStream().transform(transformer),
-        emitsInOrder(<dynamic>[4, emitsDone]));
+        emitsInOrder(<Object>[4, emitsDone]));
   });
 
   test('Rx.debounce.asBroadcastStream', () async {
@@ -81,7 +81,7 @@ void main() {
 
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 50)));
 
-    await expectLater(controller.stream, emitsInOrder(<dynamic>[3, emitsDone]));
+    await expectLater(controller.stream, emitsInOrder(<Object>[3, emitsDone]));
   });
 
   test('Rx.debounce.emits.last.item.immediately', () async {
@@ -132,6 +132,6 @@ void main() {
         Stream.fromIterable([1, 2, 3, null]).debounce((_) =>
             Stream<void>.fromFuture(
                 Future<void>.delayed(const Duration(milliseconds: 200)))),
-        emitsInOrder(<dynamic>[null, emitsDone]));
+        emitsInOrder(<Object>[null, emitsDone]));
   });
 }

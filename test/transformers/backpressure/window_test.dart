@@ -20,7 +20,7 @@ void main() {
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
                 .take(3))
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -36,7 +36,7 @@ void main() {
             .window(Stream<Null>.periodic(const Duration(milliseconds: 40))
                 .take(10))
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const ['start'], // after 40ms
           const <String>[], // 80ms
           const <String>[], // 120ms
@@ -56,7 +56,7 @@ void main() {
             .window(Stream<Null>.periodic(const Duration(seconds: 3)))
             .asyncMap((stream) => stream.toList())
             .take(1),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
@@ -72,7 +72,7 @@ void main() {
         getStream(4)
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -82,7 +82,7 @@ void main() {
         getStream(4)
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [0, 1],
           const [2, 3],
           emitsDone
@@ -109,8 +109,10 @@ void main() {
         emitsError(isException));
   });
 
-  test('Rx.window.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
-        emitsError(isArgumentError));
+  test('Rx.window.error.shouldThrowB', () {
+    expect(
+      () => Stream.fromIterable(const [1, 2, 3, 4]).window(null),
+      throwsArgumentError,
+    );
   });
 }

@@ -17,7 +17,7 @@ Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T> comparator) {
   StreamSubscription<T> subscription;
   T accumulator;
 
-  final cancelAndCompleteError = (dynamic e, StackTrace st) async {
+  final cancelAndCompleteError = (Object e, StackTrace st) async {
     final cancelFuture = subscription.cancel();
     if (cancelFuture != null) {
       await cancelFuture;

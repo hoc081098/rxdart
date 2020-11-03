@@ -9,7 +9,7 @@ void main() {
         .takeWhileInclusive((i) => i < 4);
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[2, 3, 4, emitsDone]),
+      emitsInOrder(<Object>[2, 3, 4, emitsDone]),
     );
   });
 
@@ -25,7 +25,7 @@ void main() {
     await expectLater(
       stream,
       emitsInOrder(
-        <dynamic>[
+        <Object>[
           2,
           3,
           emitsError(isA<Exception>()),

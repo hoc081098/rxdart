@@ -102,13 +102,13 @@ void main() {
     final deferStream1 = Rx.defer<int>(() => throw Exception());
     expect(
       deferStream1,
-      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), emitsDone]),
     );
 
     final deferStream2 = Rx.defer<int>(() => throw Exception(), reusable: true);
     expect(
       deferStream2,
-      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), emitsDone]),
     );
   });
 }

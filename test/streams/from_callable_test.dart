@@ -11,7 +11,7 @@ void main() {
     });
 
     expect(called, false);
-    expectLater(stream, emitsInOrder(<dynamic>[2, emitsDone]));
+    expectLater(stream, emitsInOrder(<Object>[2, emitsDone]));
     expect(called, true);
   });
 
@@ -25,7 +25,7 @@ void main() {
     });
 
     expect(called, false);
-    expectLater(stream, emitsInOrder(<dynamic>[2, emitsDone]));
+    expectLater(stream, emitsInOrder(<Object>[2, emitsDone]));
     expect(called, true);
   });
 
@@ -75,7 +75,7 @@ void main() {
 
     expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), emitsDone]),
     );
   });
 
@@ -85,7 +85,7 @@ void main() {
 
       expectLater(
         stream,
-        emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+        emitsInOrder(<Object>[emitsError(isException), emitsDone]),
       );
     }
 
@@ -94,7 +94,7 @@ void main() {
 
       expectLater(
         stream,
-        emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+        emitsInOrder(<Object>[emitsError(isException), emitsDone]),
       );
     }
   });

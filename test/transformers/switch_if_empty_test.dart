@@ -7,14 +7,14 @@ void main() {
   test('Rx.switchIfEmpty.whenEmpty', () async {
     expect(
       Stream<int>.empty().switchIfEmpty(Stream.value(1)),
-      emitsInOrder(<dynamic>[1, emitsDone]),
+      emitsInOrder(<Object>[1, emitsDone]),
     );
   });
 
   test('Rx.initial.completes', () async {
     expect(
       Stream.value(99).switchIfEmpty(Stream.value(1)),
-      emitsInOrder(<dynamic>[99, emitsDone]),
+      emitsInOrder(<Object>[99, emitsDone]),
     );
   });
 

@@ -27,7 +27,7 @@ void main() {
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
             .flatMap((stream) => stream.map((event) => {stream.key: event})),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           {'odd': 1},
           {'even': 2},
           {'odd': 3},
@@ -45,7 +45,7 @@ void main() {
                 {stream.key: <int>[]},
                 (Map<String, List<int>> previous, element) =>
                     previous..[stream.key].add(element))),
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           {
             'odd': [1, 3]
           },
@@ -62,7 +62,7 @@ void main() {
             .groupBy((value) => value)
             // drain will emit 'done' onDone
             .map((stream) async => await stream.drain('done')),
-        emitsInOrder(<dynamic>['done', 'done', 'done', 'done', emitsDone]));
+        emitsInOrder(<Object>['done', 'done', 'done', 'done', emitsDone]));
   });
 
   test('Rx.groupBy.asBroadcastStream', () async {

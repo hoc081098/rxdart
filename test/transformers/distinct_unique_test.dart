@@ -21,7 +21,7 @@ void main() {
 
       await expectLater(
           stream,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             const _TestObject('a'),
             const _TestObject('b'),
             const _TestObject('c'),
@@ -46,7 +46,7 @@ void main() {
 
       await expectLater(
           stream,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             const _TestObject('a'),
             const _TestObject('b'),
             const _TestObject('c'),
@@ -99,7 +99,7 @@ void main() {
 
       await expectLater(
           firstStream,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             const _TestObject('a'),
             const _TestObject('b'),
             const _TestObject('c'),
@@ -108,7 +108,7 @@ void main() {
 
       await expectLater(
           secondStream,
-          emitsInOrder(<dynamic>[
+          emitsInOrder(<Object>[
             const _TestObject('a'),
             const _TestObject('b'),
             const _TestObject('c'),

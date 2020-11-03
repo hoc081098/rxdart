@@ -248,10 +248,10 @@ void main() {
       seeded.add(1);
       scheduleMicrotask(() => seeded.close());
 
-      await expectLater(unseeded.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(unseeded.stream, emitsInOrder(<Object>[1, emitsDone]));
       await expectLater(unseeded.isClosed, isTrue);
 
-      await expectLater(seeded.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(seeded.stream, emitsInOrder(<Object>[1, emitsDone]));
       await expectLater(seeded.isClosed, isTrue);
     });
 
@@ -645,7 +645,7 @@ void main() {
     test(
         'issue/350: emits duplicate values when listening multiple times and starting with an Error',
         () async {
-      final subject = BehaviorSubject<dynamic>();
+      final subject = BehaviorSubject<Object>();
 
       subject.addError('error');
 
@@ -846,8 +846,8 @@ void main() {
           var behaviorSubject = BehaviorSubject.seeded(1);
 
           var stream = behaviorSubject.handleError(
-            expectAsync1<void, dynamic>(
-              (dynamic e) => expect(e, isException),
+            expectAsync1<void, Object>(
+              (Object e) => expect(e, isException),
               count: 1,
             ),
           );
@@ -865,8 +865,8 @@ void main() {
           var behaviorSubject = BehaviorSubject<int>();
 
           var stream = behaviorSubject.handleError(
-            expectAsync1<void, dynamic>(
-              (dynamic e) => expect(e, isException),
+            expectAsync1<void, Object>(
+              (Object e) => expect(e, isException),
               count: 1,
             ),
           );

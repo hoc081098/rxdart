@@ -12,7 +12,7 @@ void main() {
         return Rx.timer(i, Duration(milliseconds: 100));
       });
 
-      await expectLater(stream, emitsInOrder(<dynamic>[0, emitsDone]));
+      await expectLater(stream, emitsInOrder(<Object>[0, emitsDone]));
       await expectLater(calls, 1);
     });
 
@@ -23,7 +23,7 @@ void main() {
         yield await Future.delayed(Duration(milliseconds: 70), () => i);
       });
 
-      await expectLater(stream, emitsInOrder(<dynamic>[0, 3, 6, 9, emitsDone]));
+      await expectLater(stream, emitsInOrder(<Object>[0, 3, 6, 9, emitsDone]));
     });
 
     test('is reusable', () async {
@@ -32,12 +32,12 @@ void main() {
 
       await expectLater(
         Rx.range(0, 9).transform(transformer),
-        emitsInOrder(<dynamic>[0, emitsDone]),
+        emitsInOrder(<Object>[0, emitsDone]),
       );
 
       await expectLater(
         Rx.range(0, 9).transform(transformer),
-        emitsInOrder(<dynamic>[0, emitsDone]),
+        emitsInOrder(<Object>[0, emitsDone]),
       );
     });
 

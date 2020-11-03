@@ -15,7 +15,7 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 /// ```dart
 /// RetryWhenStream<int>(
 ///   () => Stream<int>.fromIterable(<int>[1]),
-///   (dynamic error, StackTrace s) => throw error,
+///   (Object error, StackTrace s) => throw error,
 /// ).listen(print); // Prints 1
 /// ```
 ///
@@ -25,7 +25,7 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 ///   () => Stream<int>
 ///       .periodic(const Duration(seconds: 1), (int i) => i)
 ///       .map((int i) => i == 2 ? throw 'exception' : i),
-///   (dynamic e, StackTrace s) {
+///   (Object e, StackTrace s) {
 ///     return Rx<String>
 ///         .timer('random value', const Duration(milliseconds: 200));
 ///   },
@@ -102,7 +102,7 @@ class RetryWhenStream<T> extends Stream<T> {
   void _retry() {
     _subscription = streamFactory().listen(
       _controller.add,
-      onError: (Object e, [StackTrace s]) {
+      onError: (Object e, StackTrace s) {
         _subscription.cancel();
 
         StreamSubscription<void> sub;
@@ -112,7 +112,7 @@ class RetryWhenStream<T> extends Stream<T> {
             _errors.add(ErrorAndStackTrace(e, s));
             _retry();
           },
-          onError: (Object e, [StackTrace s]) {
+          onError: (Object e, StackTrace s) {
             sub.cancel();
             _controller
               ..addError(RetryError.onReviveFailed(

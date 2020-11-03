@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DoStreamSink<S> implements ForwardingSink<S, S> {
-  final dynamic Function() _onCancel;
+  final Object Function() _onCancel;
   final void Function(S event) _onData;
   final void Function() _onDone;
   final void Function(Notification<S> notification) _onEach;
@@ -41,7 +41,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, StackTrace st) {
     try {
       _onError?.call(e, st);
     } catch (e, s) {
@@ -71,18 +71,34 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _onCancel?.call();
+  FutureOr<void> onCancel(EventSink<S> sink) => _onCancel?.call();
 
   @override
   void onListen(EventSink<S> sink) {
-    _onListen?.call();
+    try {
+      _onListen?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
   }
 
   @override
-  void onPause(EventSink<S> sink) => _onPause?.call();
+  void onPause(EventSink<S> sink) {
+    try {
+      _onPause?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 
   @override
-  void onResume(EventSink<S> sink) => _onResume?.call();
+  void onResume(EventSink<S> sink) {
+    try {
+      _onResume?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 }
 
 /// Invokes the given callback at the corresponding point the the stream
@@ -122,7 +138,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 ///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// fires when all subscriptions have cancelled.
-  final dynamic Function() onCancel;
+  final Object Function() onCancel;
 
   /// fires when data is emitted
   final void Function(S event) onData;

@@ -1,25 +1,27 @@
 import 'dart:async';
 
-class _ScanStreamSink<S, T> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _ScanStreamSink<S, T>
+    with ForwardingSinkMixin<S, T>
+    implements ForwardingSink<S, T> {
   final T Function(T accumulated, S value, int index) _accumulator;
-  final EventSink<T> _outputSink;
   T _acc;
   var _index = 0;
 
-  _ScanStreamSink(this._outputSink, this._accumulator, [T seed]) : _acc = seed;
+  _ScanStreamSink(this._accumulator, [T seed]) : _acc = seed;
 
   @override
-  void add(S data) {
-    _acc = _accumulator(_acc, data, _index++);
-
-    _outputSink.add(_acc);
+  void add(EventSink<T> sink, S data) {
+    try {
+      _acc = _accumulator(_acc, data, _index++);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
+    sink.add(_acc);
   }
-
-  @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
-
-  @override
-  void close() => _outputSink.close();
 }
 
 /// Applies an accumulator function over an stream sequence and returns
@@ -44,8 +46,8 @@ class ScanStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ScanStreamTransformer(this.accumulator, [this.seed]);
 
   @override
-  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _ScanStreamSink<S, T>(sink, accumulator, seed));
+  Stream<T> bind(Stream<S> stream) =>
+      forwardStream(stream, _ScanStreamSink<S, T>(accumulator, seed));
 }
 
 /// Extends

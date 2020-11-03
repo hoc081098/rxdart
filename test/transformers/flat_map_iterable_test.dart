@@ -9,7 +9,7 @@ void main() {
       expect(
           Rx.range(1, 4)
               .flatMapIterable((int i) => Stream<List<int>>.value(<int>[i])),
-          emitsInOrder(<dynamic>[1, 2, 3, 4, emitsDone]));
+          emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]));
     });
   });
   test('Rx.flatMapIterable accidental broadcast', () async {

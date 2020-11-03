@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<Object> _getStream() {
-  final controller = StreamController<dynamic>();
+  final controller = StreamController<Object>();
 
   Timer(const Duration(milliseconds: 100), () => controller.add(1));
   Timer(const Duration(milliseconds: 200), () => controller.add('2'));

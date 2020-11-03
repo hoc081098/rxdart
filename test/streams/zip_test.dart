@@ -10,7 +10,7 @@ void main() {
         Stream.fromIterable(['A1', 'B1']),
         Stream.fromIterable(['A2', 'B2', 'C2']),
       ], (values) => values.first + values.last),
-      emitsInOrder(<dynamic>['A1A2', 'B1B2', emitsDone]),
+      emitsInOrder(<Object>['A1A2', 'B1B2', emitsDone]),
     );
   });
 
@@ -25,7 +25,7 @@ void main() {
         Stream.fromIterable(['A2', 'B2', 'C2']),
         Stream.fromIterable(['A3', 'B3', 'C3']),
       ]),
-      emitsInOrder(<dynamic>[
+      emitsInOrder(<Object>[
         ['A1', 'A2', 'A3'],
         ['B1', 'B2', 'B3'],
         emitsDone
@@ -322,7 +322,7 @@ void main() {
   });
 
   test('Rx.zip.error.shouldThrowD', () {
-    expect(() => ZipStream<num>(<Stream<dynamic>>[], () {}),
+    expect(() => ZipStream<num>(<Stream<Object>>[], () {}),
         throwsArgumentError);
   });*/
 

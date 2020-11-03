@@ -13,7 +13,13 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
 
   @override
   void add(EventSink<T> sink, S data) {
-    final mappedStream = _mapper(data);
+    Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _openSubscriptions++;
 
@@ -36,7 +42,8 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, StackTrace st) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {
@@ -48,8 +55,8 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) =>
-      Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
+  FutureOr<void> onCancel(EventSink<T> sink) =>
+      Future.wait<Object>(_subscriptions.map((s) => s.cancel()));
 
   @override
   void onListen(EventSink<T> sink) {}

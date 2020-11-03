@@ -841,7 +841,7 @@ abstract class Rx {
   /// ```dart
   /// RetryWhenStream<int>(
   ///   () => Stream<int>.fromIterable(<int>[1]),
-  ///   (dynamic error, StackTrace s) => throw error,
+  ///   (Object error, StackTrace s) => throw error,
   /// ).listen(print); // Prints 1
   /// ```
   ///
@@ -851,7 +851,7 @@ abstract class Rx {
   ///   () => Stream<int>
   ///       .periodic(const Duration(seconds: 1), (int i) => i)
   ///       .map((int i) => i == 2 ? throw 'exception' : i),
-  ///   (dynamic e, StackTrace s) {
+  ///   (Object e, StackTrace s) {
   ///     return Rx.timer('random value', const Duration(milliseconds: 200);
   ///   },
   /// ).take(4).listen(print); // Prints 0, 1, 0, 1
@@ -887,7 +887,7 @@ abstract class Rx {
   /// ```
   static Stream<T> retryWhen<T>(
     Stream<T> Function() streamFactory,
-    Stream<void> Function(dynamic error, StackTrace stack) retryWhenFactory,
+    Stream<void> Function(Object error, StackTrace stack) retryWhenFactory,
   ) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 

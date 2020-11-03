@@ -13,7 +13,7 @@ void main() {
             .throttle(
                 (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
-        emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+        emitsInOrder(<Object>[1, 4, 7, emitsDone]));
   });
 
   test('Rx.throttle.trailing', () async {
@@ -24,7 +24,7 @@ void main() {
                 trailing: true,
                 leading: false)
             .take(3),
-        emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
+        emitsInOrder(<Object>[3, 6, 9, emitsDone]));
   });
 
   test('Rx.throttle.dynamic.window', () async {
@@ -34,7 +34,7 @@ void main() {
                 ? Stream<void>.periodic(const Duration(milliseconds: 10))
                 : Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
-        emitsInOrder(<dynamic>[1, 2, 5, emitsDone]));
+        emitsInOrder(<Object>[1, 2, 5, emitsDone]));
   });
 
   test('Rx.throttle.dynamic.window.trailing', () async {
@@ -47,7 +47,7 @@ void main() {
                 trailing: true,
                 leading: false)
             .take(3),
-        emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+        emitsInOrder(<Object>[1, 4, 7, emitsDone]));
   });
 
   test('Rx.throttle.leading.trailing.1', () async {
@@ -68,7 +68,7 @@ void main() {
     );
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[1, 3, 4, 6, 7, 9, 10, 11, emitsDone]),
+      emitsInOrder(<Object>[1, 3, 4, 6, 7, 9, 10, 11, emitsDone]),
     );
     expect(values, [1, 4, 7, 10]);
   });
@@ -90,7 +90,7 @@ void main() {
     );
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[1, 3, 4, 6, 7, 9, 10, emitsDone]),
+      emitsInOrder(<Object>[1, 3, 4, 6, 7, 9, 10, emitsDone]),
     );
     expect(values, [1, 4, 7, 10]);
   });
@@ -100,10 +100,10 @@ void main() {
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
-        emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        emitsInOrder(<Object>[1, 4, emitsDone]));
 
     await expectLater(_stream().transform(transformer).take(2),
-        emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        emitsInOrder(<Object>[1, 4, emitsDone]));
   });
 
   test('Rx.throttle.asBroadcastStream', () async {
@@ -148,7 +148,7 @@ void main() {
     });
 
     await expectLater(
-        controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        controller.stream, emitsInOrder(<Object>[1, 4, emitsDone]));
 
     await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription

@@ -27,7 +27,7 @@ void main() {
 
     await expectLater(
       combined,
-      emitsInOrder(<dynamic>[
+      emitsInOrder(<Object>[
         [3, 2, 3],
         emitsDone
       ]),
@@ -45,7 +45,7 @@ void main() {
 
     await expectLater(
       combined,
-      emitsInOrder(<dynamic>[
+      emitsInOrder(<Object>[
         [3],
         emitsDone
       ]),
@@ -64,7 +64,7 @@ void main() {
 
     await expectLater(
       combined,
-      emitsInOrder(<dynamic>[8, emitsDone]),
+      emitsInOrder(<Object>[8, emitsDone]),
     );
   });
 
@@ -76,7 +76,7 @@ void main() {
         (int a_value, int b_value, bool c_value) =>
             '$a_value $b_value $c_value');
 
-    await expectLater(stream, emitsInOrder(<dynamic>['2 4 true', emitsDone]));
+    await expectLater(stream, emitsInOrder(<Object>['2 4 true', emitsDone]));
   });
 
   test('Rx.forkJoin3.single.subscription', () async {
@@ -89,7 +89,7 @@ void main() {
 
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>['2 4 true', emitsDone]),
+      emitsInOrder(<Object>['2 4 true', emitsDone]),
     );
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
@@ -102,7 +102,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           [2, 2],
           emitsDone
         ]));
@@ -130,7 +130,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, '2', 3.0],
           emitsDone
         ]));
@@ -152,7 +152,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4],
           emitsDone
         ]));
@@ -176,7 +176,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4, 5],
           emitsDone
         ]));
@@ -202,7 +202,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4, 5, 6],
           emitsDone
         ]));
@@ -231,7 +231,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4, 5, 6, 7],
           emitsDone
         ]));
@@ -262,7 +262,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4, 5, 6, 7, 8],
           emitsDone
         ]));
@@ -305,7 +305,7 @@ void main() {
 
     await expectLater(
         stream,
-        emitsInOrder(<dynamic>[
+        emitsInOrder(<Object>[
           const [1, 2, 3, 4, 5, 6, 7, 8, 9],
           emitsDone
         ]));
@@ -332,7 +332,7 @@ void main() {
         Stream.value(1),
         Stream.value(1),
         Stream<int>.error(Exception()),
-        (int a_value, int b_value, int c_value, dynamic _) =>
+        (int a_value, int b_value, int c_value, Object _) =>
             '$a_value $b_value $c_value $_');
 
     streamWithError.listen(null,
@@ -384,7 +384,7 @@ void main() {
     );
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsError(isStateError), emitsDone]),
+      emitsInOrder(<Object>[emitsError(isStateError), emitsDone]),
     );
   });
 
@@ -401,7 +401,7 @@ void main() {
     );
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsError(isException), 3, emitsDone]),
+      emitsInOrder(<Object>[emitsError(isException), 3, emitsDone]),
     );
   });
 

@@ -12,7 +12,7 @@ void main() {
             Stream.fromIterable(const ['A', 'B', 'C']),
           ),
         ),
-        emitsInOrder(<dynamic>['A', 'B', 'C', emitsDone]),
+        emitsInOrder(<Object>['A', 'B', 'C', emitsDone]),
       );
     });
 
