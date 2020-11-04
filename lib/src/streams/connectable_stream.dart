@@ -264,8 +264,7 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   ConnectableStreamSubscription(this._source, this._subject);
 
   @override
-  Future<void> cancel() =>
-      _source.cancel().then<void>((_) => _subject.close());
+  Future<void> cancel() => _source.cancel().then<void>((_) => _subject.close());
 
   @override
   Future<E> asFuture<E>([E futureValue]) => _source.asFuture(futureValue);
