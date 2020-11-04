@@ -1,28 +1,29 @@
 import 'dart:async';
 
-class _DefaultIfEmptyStreamSink<S> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _DefaultIfEmptyStreamSink<S>
+    with ForwardingSinkMixin<S, S>
+    implements ForwardingSink<S, S> {
   final S _defaultValue;
-  final EventSink<S> _outputSink;
   bool _isEmpty = true;
 
-  _DefaultIfEmptyStreamSink(this._outputSink, this._defaultValue);
+  _DefaultIfEmptyStreamSink(this._defaultValue);
 
   @override
-  void add(S data) {
+  void add(EventSink<S> sink, S data) {
     _isEmpty = false;
-    _outputSink.add(data);
+    sink.add(data);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
-
-  @override
-  void close() {
+  void close(EventSink<S> sink) {
     if (_isEmpty) {
-      _outputSink.add(_defaultValue);
+      sink.add(_defaultValue);
     }
 
-    _outputSink.close();
+    sink.close();
   }
 }
 
@@ -43,8 +44,8 @@ class DefaultIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   DefaultIfEmptyStreamTransformer(this.defaultValue);
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _DefaultIfEmptyStreamSink<S>(sink, defaultValue));
+  Stream<S> bind(Stream<S> stream) =>
+      forwardStream(stream, _DefaultIfEmptyStreamSink<S>(defaultValue));
 }
 
 ///
