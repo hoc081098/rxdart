@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/queue.dart';
 
 /// The strategy that is used to determine how and when a new window is created.
 enum WindowStrategy {
@@ -356,14 +357,5 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       maxLengthQueue,
     );
     return forwardStream(stream, sink);
-  }
-}
-
-extension _RemoveFirstNQueueExtension<T> on Queue<T> {
-  /// Removes the first [count] elements of this queue.
-  void removeFirstElements(int count) {
-    for (var i = 0; i < count; i++) {
-      removeFirst();
-    }
   }
 }
