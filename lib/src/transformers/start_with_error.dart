@@ -11,17 +11,17 @@ class _StartWithErrorStreamSink<S> extends ForwardingSink<S, S> {
 
   @override
   void onData(S data) {
-    sink.sinkAllStreams.add(data);
+    sink.add(data);
   }
 
   @override
   void onError(Object e, StackTrace st) {
-    sink.sinkAllStreams.addError(e, st);
+    sink.addError(e, st);
   }
 
   @override
   void onDone() {
-    sink.sinkAllStreams.close();
+    sink.close();
   }
 
   @override
@@ -29,7 +29,7 @@ class _StartWithErrorStreamSink<S> extends ForwardingSink<S, S> {
 
   @override
   void onListen() {
-    sink.sinkPerStream.addError(_e, _st);
+    sink.addError(_e, _st);
   }
 
   @override
@@ -59,5 +59,5 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithErrorStreamSink(error, stackTrace));
+      forwardStream(stream, () => _StartWithErrorStreamSink(error, stackTrace));
 }

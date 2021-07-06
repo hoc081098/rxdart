@@ -9,28 +9,21 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 /// which can be used in pair with a [ForwardingSink]
 Stream<R> forwardStream<T, R>(
   Stream<T> stream,
-  ForwardingSink<T, R> sink, [
+  ForwardingSink<T, R> Function() sinkFactory, [
   bool listenOnlyOnce = false,
 ]) {
   return stream.isBroadcast
       ? listenOnlyOnce
-          ? _forward(stream, sink)
-          : _forwardMulti(stream, sink)
-      : _forward(stream, sink);
+          ? _forward(stream, sinkFactory)
+          : _forwardMulti(stream, sinkFactory)
+      : _forward(stream, sinkFactory);
 }
 
-Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
-  final compositeController = _CompositeMultiStreamController<R>();
-
+Stream<R> _forwardMulti<T, R>(
+    Stream<T> stream, ForwardingSink<T, R> Function() sinkFactory) {
   return Stream<R>.multi((controller) {
-    if (compositeController.done) {
-      controller.close();
-      return;
-    }
-
-    compositeController.addController(controller);
-    sink.setSink(
-        ForwardingEventSink(compositeController, _MultiController(controller)));
+    final sink = sinkFactory();
+    sink.setSink(_MultiControllerSink(controller));
 
     StreamSubscription<T>? subscription;
     var cancelled = false;
@@ -55,7 +48,6 @@ Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
 
     controller.onCancel = () {
       cancelled = true;
-      compositeController.removeController(controller);
 
       final future = subscription?.cancel();
       subscription = null;
@@ -66,7 +58,7 @@ Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
 
 Stream<R> _forward<T, R>(
   Stream<T> stream,
-  ForwardingSink<T, R> sink,
+  ForwardingSink<T, R> Function() sinkFactory,
 ) {
   final controller = stream.isBroadcast
       ? StreamController<R>.broadcast(sync: true)
@@ -74,6 +66,7 @@ Stream<R> _forward<T, R>(
 
   StreamSubscription<T>? subscription;
   var cancelled = false;
+  late final sink = sinkFactory();
 
   controller.onListen = () {
     void listenToUpstream([void _]) {
@@ -98,7 +91,7 @@ Stream<R> _forward<T, R>(
       }
     }
 
-    sink.setSink(ForwardingEventSink(controller, controller));
+    sink.setSink(controller);
     final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
       futureOrVoid.then(listenToUpstream);
@@ -123,41 +116,10 @@ FutureOr<void> _waitFutures(Future<void>? f1, FutureOr<void> f2) => f1 == null
         ? Future.wait([f1, f2])
         : f1;
 
-class _CompositeMultiStreamController<T> implements EventSink<T> {
-  final _controllers = <MultiStreamController<T>>[];
-
-  var done = false;
-
-  bool get isEmpty => _controllers.isEmpty;
-
-  @override
-  void add(T event) => [..._controllers].forEach((c) => c.addSync(event));
-
-  @override
-  void close() {
-    _controllers.forEach((c) {
-      c.onCancel = null;
-      c.closeSync();
-    });
-    _controllers.clear();
-    done = true;
-  }
-
-  @override
-  void addError(Object error, [StackTrace? stackTrace]) =>
-      [..._controllers].forEach((c) => c.addErrorSync(error, stackTrace));
-
-  void addController(MultiStreamController<T> controller) =>
-      _controllers.add(controller);
-
-  bool removeController(MultiStreamController<T> controller) =>
-      _controllers.remove(controller);
-}
-
-class _MultiController<T> implements EventSink<T> {
+class _MultiControllerSink<T> implements EventSink<T> {
   final MultiStreamController<T> controller;
 
-  _MultiController(this.controller);
+  _MultiControllerSink(this.controller);
 
   @override
   void add(T event) => controller.addSync(event);

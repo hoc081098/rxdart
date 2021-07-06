@@ -10,17 +10,17 @@ class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
 
   @override
   void onData(S data) {
-    sink.sinkAllStreams.add(data);
+    sink.add(data);
   }
 
   @override
   void onError(Object e, StackTrace st) {
-    sink.sinkAllStreams.addError(e, st);
+    sink.addError(e, st);
   }
 
   @override
   void onDone() {
-    sink.sinkAllStreams.close();
+    sink.close();
   }
 
   @override
@@ -28,7 +28,7 @@ class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
 
   @override
   void onListen() {
-    sink.sinkPerStream.add(_startValue);
+    sink.add(_startValue);
   }
 
   @override
@@ -55,7 +55,7 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithStreamSink(startValue));
+      forwardStream(stream, () => _StartWithStreamSink(startValue));
 }
 
 /// Extends the [Stream] class with the ability to emit the given value as the

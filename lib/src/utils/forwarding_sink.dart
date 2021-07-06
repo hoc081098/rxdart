@@ -9,12 +9,14 @@ import 'dart:async';
 /// [Stream]s. See, for example, [Stream.eventTransformed] which uses
 /// `EventSink`s to transform events.
 abstract class ForwardingSink<T, R> {
-  ForwardingEventSink<R>? _sink;
+  EventSink<R>? _sink;
 
-  ForwardingEventSink<R> get sink =>
+  /// The output sink.
+  EventSink<R> get sink =>
       _sink ?? (throw StateError('Must call setSink(sink) before accessing!'));
 
-  void setSink(ForwardingEventSink<R> sink) => _sink = sink;
+  /// Set the output sink.
+  void setSink(EventSink<R> sink) => _sink = sink;
 
   /// Handle data event
   void onData(T data);
@@ -37,11 +39,4 @@ abstract class ForwardingSink<T, R> {
 
   /// Fires when a subscriber cancels.
   FutureOr<void> onCancel();
-}
-
-class ForwardingEventSink<T> {
-  final EventSink<T> sinkAllStreams;
-  final EventSink<T> sinkPerStream;
-
-  ForwardingEventSink(this.sinkAllStreams, this.sinkPerStream);
 }
