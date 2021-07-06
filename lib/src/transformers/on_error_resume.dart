@@ -11,14 +11,14 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   _OnErrorResumeStreamSink(this._recoveryFn);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     if (!_inRecovery) {
       sink.add(data);
     }
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
+  void addError(Object e, StackTrace st) {
     _inRecovery = true;
 
     final recoveryStream = _recoveryFn(e, st);

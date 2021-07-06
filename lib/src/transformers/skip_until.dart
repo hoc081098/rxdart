@@ -11,7 +11,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   _SkipUntilStreamSink(this._otherStream);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     if (_canAdd) {
       sink.add(data);
     }

@@ -26,7 +26,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   );
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     try {
       _onData?.call(data);
     } catch (e, s) {
@@ -41,7 +41,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
+  void addError(Object e, StackTrace st) {
     try {
       _onError?.call(e, st);
     } catch (e, s) {

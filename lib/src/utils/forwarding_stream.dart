@@ -29,6 +29,8 @@ Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
     }
 
     compositeController.addController(controller);
+    sink.setSink(
+        ForwardingEventSink(compositeController, _MultiController(controller)));
 
     StreamSubscription<T>? subscription;
     var cancelled = false;
@@ -38,14 +40,13 @@ Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
         return;
       }
       subscription = stream.listen(
-        (data) => sink.add(compositeController, data),
-        onError: (Object e, StackTrace st) =>
-            sink.addError(compositeController, e, st),
-        onDone: () => sink.close(compositeController),
+        sink.onData,
+        onError: sink.onError,
+        onDone: sink.onDone,
       );
     }
 
-    final futureOrVoid = sink.onListen(compositeController);
+    final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
       futureOrVoid.then(listenToUpstream);
     } else {
@@ -58,7 +59,7 @@ Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
 
       final future = subscription?.cancel();
       subscription = null;
-      return _waitFutures(future, sink.onCancel(compositeController));
+      return _waitFutures(future, sink.onCancel());
     };
   }, isBroadcast: true);
 }
@@ -80,24 +81,25 @@ Stream<R> _forward<T, R>(
         return;
       }
       subscription = stream.listen(
-        (data) => sink.add(controller, data),
-        onError: (Object e, StackTrace s) => sink.addError(controller, e, s),
-        onDone: () => sink.close(controller),
+        sink.onData,
+        onError: sink.onError,
+        onDone: sink.onDone,
       );
 
       if (!stream.isBroadcast) {
         controller.onPause = () {
           subscription!.pause();
-          sink.onPause(controller);
+          sink.onPause();
         };
         controller.onResume = () {
           subscription!.resume();
-          sink.onResume(controller);
+          sink.onResume();
         };
       }
     }
 
-    final futureOrVoid = sink.onListen(controller);
+    sink.setSink(ForwardingEventSink(controller, controller));
+    final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
       futureOrVoid.then(listenToUpstream);
     } else {
@@ -110,7 +112,7 @@ Stream<R> _forward<T, R>(
     final future = subscription?.cancel();
     subscription = null;
 
-    return _waitFutures(future, sink.onCancel(controller));
+    return _waitFutures(future, sink.onCancel());
   };
   return controller.stream;
 }
@@ -150,4 +152,20 @@ class _CompositeMultiStreamController<T> implements EventSink<T> {
 
   bool removeController(MultiStreamController<T> controller) =>
       _controllers.remove(controller);
+}
+
+class _MultiController<T> implements EventSink<T> {
+  final MultiStreamController<T> controller;
+
+  _MultiController(this.controller);
+
+  @override
+  void add(T event) => controller.addSync(event);
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      controller.addErrorSync(error, stackTrace);
+
+  @override
+  void close() => controller.closeSync();
 }

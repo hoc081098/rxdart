@@ -3,57 +3,39 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   final S _startValue;
-  var _isFirstEventAdded = false;
 
   _StartWithStreamSink(this._startValue);
 
   @override
-  void add(EventSink<S> sink, S data) {
-    _safeAddFirstEvent(sink);
-    sink.add(data);
+  void onData(S data) {
+    sink.sinkAllStreams.add(data);
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
-    _safeAddFirstEvent(sink);
-    sink.addError(e, st);
+  void onError(Object e, StackTrace st) {
+    sink.sinkAllStreams.addError(e, st);
   }
 
   @override
-  void close(EventSink<S> sink) {
-    _safeAddFirstEvent(sink);
-    sink.close();
+  void onDone() {
+    sink.sinkAllStreams.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {}
+  FutureOr onCancel() {}
 
   @override
-  void onListen(EventSink<S> sink) {
-    scheduleMicrotask(() => _safeAddFirstEvent(sink));
+  void onListen() {
+    sink.sinkPerStream.add(_startValue);
   }
 
   @override
-  void onPause(EventSink<S> sink) {}
+  void onPause() {}
 
   @override
-  void onResume(EventSink<S> sink) {}
-
-  // Immediately setting the starting value when onListen trigger can
-  // result in an Exception (might be a bug in dart:async?)
-  // Therefore, scheduleMicrotask is used after onListen.
-  // Because events could be added before scheduleMicrotask completes,
-  // this method is ran before any other events might be added.
-  // Once the first event(s) is/are successfully added, this method
-  // will not trigger again.
-  void _safeAddFirstEvent(EventSink<S> sink) {
-    if (!_isFirstEventAdded) {
-      sink.add(_startValue);
-      _isFirstEventAdded = true;
-    }
-  }
+  void onResume() {}
 }
 
 /// Prepends a value to the source [Stream].

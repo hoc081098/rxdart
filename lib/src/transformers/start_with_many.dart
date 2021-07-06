@@ -10,13 +10,13 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S, S> {
   _StartWithManyStreamSink(this._startValues);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     _safeAddFirstEvent(sink);
     sink.add(data);
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
+  void addError(Object e, StackTrace st) {
     _safeAddFirstEvent(sink);
     sink.addError(e, st);
   }

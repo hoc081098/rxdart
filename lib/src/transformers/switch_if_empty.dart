@@ -12,7 +12,7 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   _SwitchIfEmptyStreamSink(this._fallbackStream);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     _isEmpty = false;
     sink.add(data);
   }

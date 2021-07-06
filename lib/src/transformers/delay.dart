@@ -13,7 +13,7 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   _DelayStreamSink(this._duration);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     final subscription = Rx.timer<void>(null, _duration).listen((_) {
       _subscriptions.removeFirst();
 
