@@ -49,8 +49,7 @@ void main() {
   });
 
   test('Rx.windowTime.reusable', () async {
-    final transformer = WindowStreamTransformer<int>(
-        (_) => Stream<void>.periodic(const Duration(milliseconds: 160)));
+    final transformer = WindowStreamTransformer<int>(Stream<void>.periodic(const Duration(milliseconds: 160)));
 
     await expectLater(
         getStream(4)

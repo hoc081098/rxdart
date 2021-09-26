@@ -15,10 +15,16 @@ Stream<int> getStream(int n) async* {
 
 void main() {
   test('Rx.window', () async {
+    await getStream(4)
+        .window(Stream<void>.periodic(const Duration(milliseconds: 160))
+    )
+        .asyncMap((stream) => stream.toList())
+    .forEach(print);
+
     await expectLater(
         getStream(4)
             .window(Stream<void>.periodic(const Duration(milliseconds: 160))
-                .take(3))
+                )
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
           const [0, 1],
@@ -34,7 +40,7 @@ void main() {
                     .then((_) => 'end'))
             .startWith('start')
             .window(Stream<void>.periodic(const Duration(milliseconds: 40))
-                .take(10))
+             )
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
           const ['start'], // after 40ms
@@ -67,7 +73,7 @@ void main() {
   });
 
   test('Rx.window.reusable', () async {
-    final transformer = WindowStreamTransformer<int>((_) =>
+    final transformer = WindowStreamTransformer<int>(
         Stream<void>.periodic(const Duration(milliseconds: 160))
             .take(3)
             .asBroadcastStream());
