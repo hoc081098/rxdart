@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
   final Stream<void> windowBoundaries;
@@ -23,7 +23,10 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
   }
 
   @override
-  void onData(T data) => windowController?.add(data);
+  void onData(T data) {
+    windowController?.add(data);
+    print('Emitted $data');
+  }
 
   @override
   void onDone() {
@@ -36,6 +39,7 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
 
   @override
   FutureOr<void> onListen() {
+    print('onListen');
     openWindow();
     subscription = windowBoundaries.listen(
       (_) => openWindow(),
@@ -44,12 +48,13 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
   }
 
   @override
-  void onPause() => subscription?.pause();
+  void onPause() {}
 
   @override
-  void onResume() => subscription?.resume();
+  void onResume() {}
 
   void openWindow() {
+    print('Open window');
     windowController?.close();
     windowController = StreamController<T>.broadcast(sync: true);
     sink.add(windowController!.stream);
@@ -214,16 +219,19 @@ extension WindowExtensions<T> on Stream<T> {
       window(Stream<void>.periodic(duration));
 }
 
-void main() async{
-  Stream.periodic(const Duration(seconds: 1), (i) => i)
+void main() async {
+  Stream.periodic(const Duration(milliseconds: 500), (i) => i)
+      .debug(identifier: '1')
       .window(Stream<void>.periodic(const Duration(seconds: 3)))
-  .asyncExpand((event) => event)
+      .debug(identifier: '2')
+      .asyncExpand((event) => event)
+      .debug(identifier: '3')
       .listen((s) {
-        print('EMIT $s');
-        // s.listen((event) {
-        //   print('event $event');
-        // });
-      });
+    print('EMIT $s');
+    // s.listen((event) {
+    //   print('event $event');
+    // });
+  });
 
   await Future<void>.delayed(Duration(seconds: 100));
 }
