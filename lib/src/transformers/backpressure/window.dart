@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
+import 'package:rxdart_ext/rxdart_ext.dart' show DebugStreamExtension;
 
 class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
   final Stream<void> windowBoundaries;
@@ -23,10 +23,7 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
   }
 
   @override
-  void onData(T data) {
-    windowController?.add(data);
-    print('Emitted $data');
-  }
+  void onData(T data) => windowController?.add(data);
 
   @override
   void onDone() {
@@ -39,25 +36,26 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
 
   @override
   FutureOr<void> onListen() {
-    print('onListen');
     openWindow();
     subscription = windowBoundaries.listen(
       (_) => openWindow(),
       onError: onError,
     );
+    if (subscription!.isPaused) {
+      subscription!.resume();
+    }
   }
 
   @override
-  void onPause() {}
+  void onPause() => subscription?.pause();
 
   @override
-  void onResume() {}
+  void onResume() => subscription?.resume();
 
   void openWindow() {
-    print('Open window');
     windowController?.close();
-    windowController = StreamController<T>.broadcast(sync: true);
-    sink.add(windowController!.stream);
+    sink.add(
+        (windowController = StreamController<T>.broadcast(sync: true)).stream);
   }
 }
 
@@ -74,6 +72,7 @@ class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
+  /// TODO
   final Stream<void> windowBoundaries;
 
   /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
@@ -83,9 +82,8 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
   WindowStreamTransformer(this.windowBoundaries);
 
   @override
-  Stream<Stream<T>> bind(Stream<T> stream) {
-    return forwardStream(stream, () => _WindowStreamSink(windowBoundaries));
-  }
+  Stream<Stream<T>> bind(Stream<T> stream) =>
+      forwardStream(stream, () => _WindowStreamSink(windowBoundaries));
 }
 
 /// Buffers a number of values from the source Stream by count then emits the
@@ -220,14 +218,13 @@ extension WindowExtensions<T> on Stream<T> {
 }
 
 void main() async {
-  Stream.periodic(const Duration(milliseconds: 500), (i) => i)
-      .debug(identifier: '1')
-      .window(Stream<void>.periodic(const Duration(seconds: 3)))
-      .debug(identifier: '2')
-      .asyncExpand((event) => event)
-      .debug(identifier: '3')
+  Stream.periodic(const Duration(milliseconds: 300), (i) => i)
+      .debug(identifier: 'SOURCE')
+      .window(Stream<void>.periodic(const Duration(seconds: 1))
+          .debug(identifier: 'BOUNDARY'))
+      .asyncExpand((event) => event.toList().asStream())
       .listen((s) {
-    print('EMIT $s');
+    print('FINAL $s');
     // s.listen((event) {
     //   print('event $event');
     // });
