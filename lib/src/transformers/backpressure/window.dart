@@ -216,19 +216,3 @@ extension WindowExtensions<T> on Stream<T> {
   Stream<Stream<T>> windowTime(Duration duration) =>
       window(Stream<void>.periodic(duration));
 }
-
-void main() async {
-  Stream.periodic(const Duration(milliseconds: 300), (i) => i)
-      .debug(identifier: 'SOURCE')
-      .window(Stream<void>.periodic(const Duration(seconds: 1))
-          .debug(identifier: 'BOUNDARY'))
-      .asyncExpand((event) => event.toList().asStream())
-      .listen((s) {
-    print('FINAL $s');
-    // s.listen((event) {
-    //   print('event $event');
-    // });
-  });
-
-  await Future<void>.delayed(Duration(seconds: 100));
-}
