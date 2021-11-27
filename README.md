@@ -43,7 +43,7 @@ automatically upgrade your code to support RxDart 0.23.x.
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  const konamiKeyCodes = const <int>[
+  const konamiKeyCodes = <int>[
     KeyCode.UP,
     KeyCode.UP,
     KeyCode.DOWN,
@@ -55,13 +55,14 @@ void main() {
     KeyCode.B,
     KeyCode.A,
   ];
-  final result = querySelector('#result');
+
+  final result = querySelector('#result')!;
 
   document.onKeyUp
-    .map((event) => event.keyCode)
-    .bufferCount(10, 1) // An extension method provided by rxdart
-    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
-    .listen((_) => result.innerHtml = 'KONAMI!');
+      .map((event) => event.keyCode)
+      .bufferCount(10, 1) // An extension method provided by rxdart
+      .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
+      .listen((_) => result.innerHtml = 'KONAMI!');
 }
 ```
 
@@ -104,7 +105,7 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 - [TimerStream](https://pub.dev/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://pub.dev/documentation/rxdart/latest/rx/Rx/timer.html)
 - [UsingStream](https://pub.dev/documentation/rxdart/latest/rx/UsingStream-class.html) / [Rx.using](https://pub.dev/documentation/rxdart/latest/rx/Rx/using.html)
 - [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
-- ** If you're looking for an [Interval](http://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
+- If you're looking for an [Interval](https://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
 
 ### Extension Methods
 
@@ -200,7 +201,7 @@ Additional information about the following situations can be found by reading th
 | Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
-| Single/Maybe/Complete ? | Yes | No, uses Dart `Future` |
+| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/single/Single-class.html) (`Completable = Single<void>, Maybe<T> = Single<T?>`) |
 | Support back pressure| Yes | Yes |
 | Can emit null? | Yes, except RxJava | Yes |
 | Sync by default | Yes | No |
@@ -215,9 +216,9 @@ Web and command-line examples can be found in the `example` folder.
 In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
-  2. Run `pub get`
-  3. Run `pub run build_runner serve example`
-  4. Navigate to [http://localhost:8080/web/](http://localhost:8080/web/) in your browser
+  2. Run `dart pub get`
+  3. Run `dart pub run build_runner serve example`
+  4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
 
 ### Command Line Examples
 
@@ -247,8 +248,8 @@ To run the flutter example, you must have Flutter installed. For installation in
 
 - [Documentation on the Dart Stream class](https://api.dart.dev/stable/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
-- [ReactiveX (Rx)](http://reactivex.io/)
+- [ReactiveX (Rx)](https://reactivex.io/)
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/frankpepermans/rxdart/blob/master/CHANGELOG.md) to get all release notes.
+Refer to the [Changelog](https://github.com/ReactiveX/rxdart/blob/master/CHANGELOG.md) to get all release notes.

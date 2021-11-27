@@ -7,21 +7,24 @@ on:
   pull_request:
     branches: [ master ]
     paths-ignore: [ '**.md' ]
-
+  schedule:
+    # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
+    - cron:  '0 0 */7 * *'
 jobs:
-  build:
-
+  analyze-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        container: [ 'google/dart:latest', 'google/dart:dev' ]
-
-    container:
-      image: ${{ matrix.container }}
+        sdk: [ stable, beta, dev, 2.12.0 ]
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: ${{ matrix.sdk }}
 
       - name: Print Dart version
         run: dart --version
@@ -30,10 +33,11 @@ jobs:
         run: pub get
 
       - name: Analyze
+        if: ${{ matrix.sdk == 'stable' }}
         run: dart analyze --fatal-infos --fatal-warnings
 
       - name: Format code
-        if: ${{ matrix.container == 'google/dart:latest' }}
+        if: ${{ matrix.sdk == 'stable' }}
         run: dart format . --set-exit-if-changed
 
       - name: Active coverage
@@ -65,4 +69,4 @@ jobs:
           --packages=.packages
           --report-on=lib
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2.1.0
