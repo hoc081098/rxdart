@@ -1,6 +1,63 @@
 import 'dart:async';
 
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart_ext/rxdart_ext.dart' show DebugStreamExtension;
+
+class _WindowStreamSink<T> extends ForwardingSink<T, Stream<T>> {
+  final Stream<void> windowBoundaries;
+
+  StreamController<T>? windowController;
+  StreamSubscription<void>? subscription;
+
+  _WindowStreamSink(this.windowBoundaries);
+
+  @override
+  FutureOr<void> onCancel() {
+    scheduleMicrotask(() {
+      windowController?.close();
+      windowController = null;
+    });
+    return subscription?.cancel();
+  }
+
+  @override
+  void onData(T data) => windowController?.add(data);
+
+  @override
+  void onDone() {
+    windowController?.close();
+    sink.close();
+  }
+
+  @override
+  void onError(Object error, StackTrace st) => sink.addError(error, st);
+
+  @override
+  FutureOr<void> onListen() {
+    openWindow();
+    subscription = windowBoundaries.listen(
+      (_) => openWindow(),
+      onError: onError,
+    );
+    if (subscription!.isPaused) {
+      subscription!.resume();
+    }
+  }
+
+  @override
+  void onPause() => subscription?.pause();
+
+  @override
+  void onResume() => subscription?.resume();
+
+  void openWindow() {
+    windowController?.close();
+    sink.add(
+        (windowController = StreamController<T>.broadcast(sync: true)).stream);
+  }
+}
 
 /// Creates a [Stream] where each item is a [Stream] containing the items
 /// from the source sequence.
@@ -14,16 +71,19 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .window(Stream.periodic(const Duration(milliseconds: 160), (i) => i))
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-class WindowStreamTransformer<T>
-    extends BackpressureStreamTransformer<T, Stream<T>> {
+class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
+  /// TODO
+  final Stream<void> windowBoundaries;
+
   /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
-  /// emits this [Stream] whenever [window] fires an event.
+  /// emits this [Stream] whenever [windowBoundaries] fires an event.
   ///
-  /// The [Stream] is recreated and starts empty upon every [window] event.
-  WindowStreamTransformer(Stream Function(T event) window)
-      : super(WindowStrategy.firstEventOnly, window,
-            onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
-            ignoreEmptyWindows: false);
+  /// The [Stream] is recreated and starts empty upon every [windowBoundaries] event.
+  WindowStreamTransformer(this.windowBoundaries);
+
+  @override
+  Stream<Stream<T>> bind(Stream<T> stream) =>
+      forwardStream(stream, () => _WindowStreamSink(windowBoundaries));
 }
 
 /// Buffers a number of values from the source Stream by count then emits the
@@ -104,7 +164,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
   Stream<Stream<T>> window(Stream window) =>
-      transform(WindowStreamTransformer((_) => window));
+      transform(WindowStreamTransformer(window));
 
   /// Buffers a number of values from the source Stream by [count] then emits
   /// the buffer as a [Stream] and clears it, and starts a new buffer each
