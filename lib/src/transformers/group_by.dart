@@ -11,6 +11,8 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
 
   final groups = <K, StreamController<T>>{};
   Map<K, StreamSubscription<void>>? subscriptions;
+  var cancelled = false;
+  var activeGroups = 0;
 
   _GroupByStreamSink(this.grouper, this.duration);
 
@@ -23,6 +25,16 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
 
   StreamController<T> _controllerBuilder(K key) {
     final groupedController = StreamController<T>.broadcast(sync: true);
+    groupedController.onListen = () {
+      ++activeGroups;
+      print('incremented: $activeGroups');
+    };
+    groupedController.onCancel = () {
+      print('decremented: $activeGroups');
+      if (--activeGroups == 0 && cancelled) {
+        cancel();
+      }
+    };
     final groupByStream = GroupedStream<T, K>(key, groupedController.stream);
 
     if (duration != null) {
@@ -51,7 +63,23 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
       return;
     }
 
-    groups.putIfAbsent(key, () => _controllerBuilder(key)).add(data);
+    var group = groups[key];
+    if (group != null) {
+      if (group.isClosed) {
+        groups.remove(group);
+      } else {
+        group.add(data);
+        return;
+      }
+    }
+
+    if (cancelled) {
+      if (activeGroups == 0) {
+        cancel();
+      }
+    } else {
+      groups[key] = _controllerBuilder(key)..add(data);
+    }
   }
 
   @override
@@ -65,15 +93,9 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
 
   @override
   Future<void>? onCancel() {
-    scheduleMicrotask(_closeAll);
-
-    if (subscriptions?.isNotEmpty == true) {
-      final future = waitFuturesList([
-        for (final s in subscriptions!.values) s.cancel(),
-      ]);
-      subscriptions?.clear();
-      subscriptions = null;
-      return future;
+    cancelled = true;
+    if (activeGroups == 0) {
+      return cancel();
     }
     return null;
   }
@@ -86,6 +108,30 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
 
   @override
   void onResume() => subscriptions?.values.resumeAll();
+
+  @override
+  bool get shouldCancelUpStreamImmediately => false;
+
+  var i = false;
+
+  Future<void> cancel() async {
+    print('cancel');
+    if (i) {
+      throw '???';
+    }
+    i = true;
+    await subscription?.cancel();
+    setSubscription(null);
+    if (subscriptions?.isNotEmpty == true) {
+      final future = waitFuturesList([
+        for (final s in subscriptions!.values) s.cancel(),
+      ]);
+      subscriptions?.clear();
+      subscriptions = null;
+      await future;
+    }
+    i = false;
+  }
 }
 
 /// The GroupBy operator divides a [Stream] that emits items into

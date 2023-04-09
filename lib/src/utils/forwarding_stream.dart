@@ -38,6 +38,7 @@ Stream<R> _forwardMulti<T, R>(
         onError: sink.onError,
         onDone: sink.onDone,
       );
+      sink.setSubscription(subscription);
     }
 
     final futureOrVoid = sink.onListen();
@@ -55,8 +56,14 @@ Stream<R> _forwardMulti<T, R>(
     controller.onCancel = () {
       cancelled = true;
 
-      final future = subscription?.cancel();
-      subscription = null;
+      final future = sink.shouldCancelSubscriptionImmediately
+          ? () {
+              final f = subscription?.cancel();
+              subscription = null;
+              sink.setSubscription(null);
+              return f;
+            }()
+          : null;
       return waitTwoFutures(future, sink.onCancel());
     };
   }, isBroadcast: true);
@@ -84,6 +91,7 @@ Stream<R> _forward<T, R>(
         onError: sink.onError,
         onDone: sink.onDone,
       );
+      sink.setSubscription(subscription);
 
       if (!stream.isBroadcast) {
         controller.onPause = () {
@@ -113,8 +121,14 @@ Stream<R> _forward<T, R>(
   controller.onCancel = () {
     cancelled = true;
 
-    final future = subscription?.cancel();
-    subscription = null;
+    final future = sink.shouldCancelSubscriptionImmediately
+        ? () {
+            final f = subscription?.cancel();
+            subscription = null;
+            sink.setSubscription(null);
+            return f;
+          }()
+        : null;
 
     return waitTwoFutures(future, sink.onCancel());
   };

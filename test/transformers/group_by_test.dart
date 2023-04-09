@@ -39,6 +39,19 @@ void main() {
         ]));
   });
 
+  test('Rx.groupBy.take', () async {
+    await Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        .interval(const Duration(milliseconds: 50))
+        .groupBy((value) => value % 3)
+        .take(2)
+        .forEach((g) {
+      g.listen((value) {
+        print('$g: $value');
+      });
+    });
+    await Future<void>.delayed(const Duration(seconds: 4));
+  });
+
   test('Rx.groupBy.correctlyEmitsGroupEvents', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
@@ -246,6 +259,7 @@ void main() {
           }, count: 4));
     }
   });
+
   test('Rx.groupBy accidental broadcast', () async {
     {
       final controller = StreamController<int>();

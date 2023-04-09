@@ -15,6 +15,14 @@ abstract class ForwardingSink<T, R> {
   EventSink<R> get sink =>
       _sink ?? (throw StateError('Must call setSink(sink) before accessing!'));
 
+  StreamSubscription<T>? _subscription;
+
+  /// The subscription to the source [Stream].
+  StreamSubscription<T>? get subscription => _subscription;
+
+  void setSubscription(StreamSubscription<T>? subscription) =>
+      _subscription = subscription;
+
   /// Set the output sink.
   void setSink(EventSink<R> sink) => _sink = sink;
 
@@ -39,4 +47,8 @@ abstract class ForwardingSink<T, R> {
 
   /// Fires when a subscriber cancels.
   FutureOr<void> onCancel();
+
+  /// Whether the subscription should be cancelled immediately when the sink is
+  /// cancelled.
+  bool get shouldCancelSubscriptionImmediately => true;
 }

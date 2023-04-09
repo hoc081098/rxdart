@@ -10,18 +10,18 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   final Stream<void>? listenDelay;
 
   final subscriptions = <StreamSubscription<void>>[];
-  StreamSubscription<void>? subscription;
+  StreamSubscription<void>? otherSUb;
   var closed = false;
 
   _DelayWhenStreamSink(this.itemDelaySelector, this.listenDelay);
 
   @override
   void onData(T data) {
-    final subscription =
+    final otherSUb =
         itemDelaySelector(data).take(1).listen(null, onError: sink.addError);
 
-    subscription.onDone(() {
-      subscriptions.remove(subscription);
+    otherSUb.onDone(() {
+      subscriptions.remove(otherSUb);
 
       sink.add(data);
       if (subscriptions.isEmpty && closed) {
@@ -29,7 +29,7 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
       }
     });
 
-    subscriptions.add(subscription);
+    subscriptions.add(otherSUb);
   }
 
   @override
@@ -45,8 +45,8 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   Future<void>? onCancel() {
-    final future = subscription?.cancel();
-    subscription = null;
+    final future = otherSUb?.cancel();
+    otherSUb = null;
 
     if (subscriptions.isEmpty) {
       return future;
@@ -68,16 +68,16 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
     }
 
     final completer = Completer<void>.sync();
-    subscription = listenDelay!.take(1).listen(
+    otherSUb = listenDelay!.take(1).listen(
       null,
       onError: (Object e, StackTrace s) {
-        subscription?.cancel();
-        subscription = null;
+        otherSUb?.cancel();
+        otherSUb = null;
         completer.completeError(e, s);
       },
       onDone: () {
-        subscription?.cancel();
-        subscription = null;
+        otherSUb?.cancel();
+        otherSUb = null;
         completer.complete(null);
       },
     );
@@ -86,13 +86,13 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   void onPause() {
-    subscription?.pause();
+    otherSUb?.pause();
     subscriptions.pauseAll();
   }
 
   @override
   void onResume() {
-    subscription?.resume();
+    otherSUb?.resume();
     subscriptions.resumeAll();
   }
 }

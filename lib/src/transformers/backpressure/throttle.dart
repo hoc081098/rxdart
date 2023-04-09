@@ -77,3 +77,9 @@ extension ThrottleExtensions<T> on Stream<T> {
         leading: leading,
       ).bind(this);
 }
+
+void main() {
+  Stream.fromIterable([1, 2, 3])
+      .throttleTime(Duration(seconds: 1))
+      .forEach(print); // prints 1
+}
